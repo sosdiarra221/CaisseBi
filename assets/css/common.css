@@ -1,0 +1,78 @@
+/* The template's ChatBox panel (always mounted, off-canvas via `right:
+   -500px`) sits far enough off the right edge that some browsers still count
+   it toward the document's scrollable width, adding phantom horizontal
+   scroll on narrow/mobile viewports even though nothing is visibly
+   overflowing. Clipping at the viewport edge is the standard fix. */
+html,
+body {
+  overflow-x: hidden;
+}
+
+.dt-layout-row:nth-child(1) {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dt-layout-row:nth-child(1) .dt-layout-start .dt-length .dt-input {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  height: 2.5rem;
+  color: var(--text-dark);
+  border-radius: 0.5rem;
+  background-color: var(--d-bg);
+}
+.dt-layout-row:nth-child(1) .dt-layout-end .dt-search .dt-input {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  height: 2.5rem;
+  color: var(--text-dark);
+  border-radius: 0.5rem;
+  background-color: var(--d-bg);
+}
+.dt-layout-row:nth-child(3) {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  padding-bottom: 15px;
+  margin-top: 1rem;
+}
+.dt-layout-row:nth-child(3) > .dt-layout-start {
+  font-size: 12px;
+  color: #888888;
+}
+.dt-layout-row:nth-child(3) > .dt-layout-end .dt-paging .first,
+.dt-layout-row:nth-child(3) > .dt-layout-end .dt-paging .last {
+  display: none;
+}
+.dt-layout-row:nth-child(3) > .dt-layout-end .dt-paging .dt-paging-button {
+  font-size: 13px;
+  height: 24px;
+  width: 24px;
+  background: transparent;
+  border-radius: 0.375rem;
+  padding: 0 0.45rem;
+  line-height: 25px;
+  margin: 0 0.225rem;
+  color: var(--primary) !important;
+  box-shadow: none !important;
+}
+
+.dt-layout-row:nth-child(3) > .dt-layout-end .dt-paging .dt-paging-button.current {
+  color: #fff !important;
+  background: var(--primary) !important;
+}
+
+/* flatpickr-calendar */
+/* .flatpickr-calendar .flatpickr-months{
+align-items: center;
+padding: 0 10px;
+} */
+
+
+
+@media screen and (max-width:500px) {
+  .dt-layout-row:nth-child(1) {
+      flex-direction: column;
+      gap: 20px;
+    }
+}

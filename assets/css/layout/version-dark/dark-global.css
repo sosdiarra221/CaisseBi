@@ -1,0 +1,37 @@
+[data-theme-version="dark"] input {
+    background-color: transparent;
+}
+[data-theme-version="dark"] h1, [data-theme-version="dark"] .h1, [data-theme-version="dark"] h2, [data-theme-version="dark"] .h2, [data-theme-version="dark"] h3, [data-theme-version="dark"] .h3, [data-theme-version="dark"] h4, [data-theme-version="dark"] .h4, [data-theme-version="dark"] h5, [data-theme-version="dark"] .h5, [data-theme-version="dark"] h6, [data-theme-version="dark"] .h6 {
+    color: #fff !important;
+}
+[data-theme-version=dark] .apexcharts-datalabels-group {
+    stroke: #fff;
+}
+[data-theme-version="dark"] .apexcharts-gridlines-vertical line ,
+[data-theme-version="dark"] .apexcharts-gridlines-horizontal line ,
+[data-theme-version="dark"] #activity line ,
+[data-theme-version="dark"] #earningChart line ,
+[data-theme-version="dark"] #overiewChart line {
+    stroke: rgba(255, 255, 255, 0.2);
+}
+[data-theme-version="dark"] .widget-timeline-status .timeline > li:not(:last-child):after {
+    background-color: #fff;
+}
+[data-theme-version="dark"] {
+    --secondary: #fff;
+    --headerbg: #2C2C2C;
+    --nav-headbg: #2C2C2C;
+    --border: #ffffff33;
+    --card: #242424;
+    --light: #171617;
+    --body-bg: #171617;
+    --sidebar-bg: #272627;
+    color: #828690;
+    background: #171617;
+	--d-bg: #171617;
+    --text-dark: #fff;
+    --success-light: #01bd9b1a;
+    --warning-light: #f89d161a;
+    --info-light: #2aa3e71a;
+    --danger-light: #e5555526;
+}

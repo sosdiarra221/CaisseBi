@@ -1,0 +1,111 @@
+.form-control.nice-select::after {
+  display: inline-block;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+  transform-origin: 0 !important;
+  transform: rotate(0deg) !important;
+}
+.form-control.nice-select::after {
+  transform: rotate(0deg) !important;
+}
+.style-1.nice-select::after {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  content: "\f078";
+  border: 0;
+  font-size: 0.7rem;
+  position: unset;
+  transform-origin: 0;
+  transform: rotate(0deg);
+  height: auto;
+  width: auto;
+  margin-top: 0;
+  margin-left: 5px;
+}
+.nice-select.open:after {
+  transform: rotate(0deg);
+}
+.nice-select .option:hover,
+.nice-select .option.focus,
+.nice-select .option.selected.focus {
+  background-color: var(--rgba-primary-1);
+  color: var(--primary);
+}
+.nice-select .list {
+  padding: 0.5rem 0;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+}
+.nice-select .option {
+  padding: 0.25rem 1rem;
+  font-size: 0.813rem;
+  color: var(--body-color);
+  min-height: auto;
+  line-height: normal;
+}
+.dataTables_length .nice-select {
+  float: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 0 6px;
+  padding-left: 15px;
+  padding-right: 39px;
+}
+.nice-select.style-2 {
+  border: 0 !important;
+  width: auto;
+  box-shadow: none;
+  color: var(--primary) !important;
+  height: 23px;
+}
+.nice-select.normal-select {
+  border: 0;
+  padding: 6px 8px;
+  display: inline-flex;
+  align-items: center;
+  float: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  background-color: transparent;
+}
+.nice-select.normal-select::after {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  content: "\f078";
+  position: absolute;
+  border: 0;
+  font-size: 0.7rem;
+  color: #fff;
+  margin-left: 1.255em;
+  margin-top: 0;
+  height: 0;
+  transform: rotate(0deg);
+  transform-origin: 0;
+  top: 0;
+  right: 0;
+  width: 0;
+}
+.nice-select.image-select {
+  min-width: 7rem;
+}
+.image-select.nice-select .list {
+  min-width: 8rem;
+}
+[data-theme-version="dark"] .nice-select {
+  --light: #171617;
+}
+[data-theme-version="dark"] .nice-select .option:hover,
+[data-theme-version="dark"] .nice-select .option.focus,
+[data-theme-version="dark"].nice-select .option.selected.focus {
+  background-color: var(--d-bg);
+  color: #fff;
+}

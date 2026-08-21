@@ -1,0 +1,17 @@
+
+[data-theme-version="dark"] .deznav .metismenu ul a:hover, [data-theme-version="dark"] .deznav .metismenu ul a:focus, [data-theme-version="dark"] .deznav .metismenu ul a.mm-active {
+    color: #fff !important;
+}
+[data-theme-version="dark"] .deznav .metismenu ul a:before {
+    background-color: #fff;
+}
+[data-theme-version="dark"] .deznav .metismenu > li:hover > a, [data-theme-version="dark"] .deznav .metismenu > li:focus > a, [data-theme-version="dark"] .deznav .metismenu > li.mm-active > a {
+    color: #fff !important;
+}
+[data-theme-version="dark"] .mix-chart-tab .nav-link {
+    background: #444444 !important;
+    color: #fff !important;
+}
+[data-theme-version="dark"] .deznav .metismenu a {
+    color: #fff !important;
+}

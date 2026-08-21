@@ -1,0 +1,161 @@
+[data-sidebar-style="mini"] .nav-control, [data-layout="horizontal"] .nav-control {
+    display: none;
+}
+[data-header-position="fixed"] .nav-header {
+    position: fixed;
+}
+.nav-header {
+    height: 5rem;
+    width: 17.5rem;
+    display: inline-block;
+    text-align: left;
+    position: absolute;
+    top: 0;
+    background-color: var(--nav-headbg);
+    transition: all 0.2s ease;
+    z-index: 5;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+}
+.nav-header .logo-compact ,
+.nav-header .brand-title-color {
+    display: none;
+}
+.nav-header .brand-logo {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 1.125rem;
+    text-decoration: none;
+    padding-left: 1.6rem;
+    padding-right: 1.6rem;
+    font-weight: 700;
+}
+@media only screen and (max-width: 87.5rem) {
+    .nav-header .brand-logo {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+   }
+}
+[data-sidebar-style="compact"] .nav-header .brand-logo, [data-sidebar-style="mini"] .nav-header .brand-logo {
+    padding-left: 0;
+    padding-right: 0;
+    justify-content: center;
+}
+@media only screen and (max-width: 47.9375rem) {
+    .nav-header .brand-logo {
+        padding-left: 0;
+        padding-right: 0;
+        justify-content: center;
+   }
+}
+.nav-header .logo-mini ,
+.nav-header .logo-color {
+    display: none;
+}
+@media only screen and (max-width: 47.9375rem) {
+    .nav-header .logo-color {
+        display: block;
+   }
+}
+.nav-header .brand-title {
+    margin-left: 0.6375rem;
+    max-width: 7.35rem;
+    font-size: 2.375rem;
+    color: var(--black);
+}
+[data-theme-version="dark"] .nav-header .brand-title {
+    background-position: 0 120%;
+}
+@media only screen and (max-width: 47.9375rem) {
+    .nav-header {
+        top: 0;
+   }
+}
+.nav-header .rect-primary-rect {
+    fill: var(--primary);
+}
+@media only screen and (max-width: 63.9375rem) {
+    .nav-header {
+        width: 5rem;
+   }
+    .nav-header .brand-title {
+        display: none;
+   }
+}
+.nav-control {
+    cursor: pointer;
+    position: absolute;
+    right: 1.5rem;
+    text-align: center;
+    top: 50.8%;
+    transform: translateY(-50%);
+    z-index: 9999;
+    font-size: 1.4rem;
+    padding: 0.125rem 0.5rem 0;
+    border-radius: var(--radius-sm);
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 30px;
+    height: 30px;
+}
+@media only screen and (max-width: 47.9375rem) {
+    .nav-control {
+        right: -3rem;
+   }
+}
+/* Humbuger Icon */
+.hamburger {
+    display: inline-block;
+    left: 0.1rem;
+    position: relative;
+    top: 0.5rem;
+    -webkit-transition: all 0.3s ease-in-out 0s;
+    transition: all 0.3s ease-in-out 0s;
+    width: 1.625rem;
+    z-index: 999;
+}
+.hamburger.is-active svg {
+    transform: rotate(180deg);
+}
+.hamburger svg {
+    position: absolute;
+    top: -29px;
+    left: -5px;
+    z-index: 1;
+}
+@media only screen and (max-width: 100rem) {
+    .hamburger svg {
+        top: -24px;
+   }
+}
+.hamburger:hover {
+    cursor: pointer;
+}
+@media (min-width: 47.9375rem) {
+    [data-sidebar-style="compact"] .nav-control {
+        display: none;
+   }
+    [data-sidebar-style="compact"] .nav-header {
+        width: 11.25rem;
+   }
+}
+[data-sidebar-style="compact"][data-layout="vertical"] .nav-header .logo-compact {
+    max-width: 4.6875rem;
+}
+[data-sidebar-style="compact"][data-layout="horizontal"] .nav-header .brand-logo {
+    padding-left: 1.875rem;
+    padding-right: 1.875rem;
+    justify-content: start;
+}
+[data-sidebar-style="modern"][data-layout="vertical"] .nav-header {
+    width: 10.625rem;
+}
+[data-sidebar-style="full"][data-layout="horizontal"] .logo-compact ,
+[data-sidebar-style="modern"][data-layout="vertical"] .nav-header .logo-compact ,
+[data-sidebar-style="full"][data-layout="vertical"] .menu-toggle .brand-title ,
+[data-sidebar-style="compact"][data-layout="vertical"] .nav-header .brand-title ,
+[data-sidebar-style="modern"][data-layout="vertical"] .nav-header .brand-title {
+    display: none;
+}

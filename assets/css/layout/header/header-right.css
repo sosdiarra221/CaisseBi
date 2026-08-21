@@ -1,0 +1,107 @@
+
+.header-right .nav-item {
+	display: flex;
+	justify-content: center;
+	position: relative;
+	height: 45px;
+}
+.header-right .nav-item .nav-link {
+	color: var(--l-ctd);
+	font-size: 1.125rem;
+}
+@media only screen and (max-width: 35.9375rem) {
+	.header-right .nav-item {
+		height: 35px;
+	}
+}
+@media only screen and (max-width: 35.9375rem) {
+	.header-right .nav-item.ps-3 {
+		padding-left: 0 !important;
+	}
+}
+.header-right .right-sidebar {
+	margin-right: -1.875rem;
+}
+.header-right .right-sidebar a {
+	height: 5rem;
+	width: 5rem;
+	text-align: center;
+	justify-content: center;
+	display: flex;
+	align-items: center;
+	border-left: 0.0625rem solid var(--light);
+}
+@media only screen and (max-width: 47.9375rem) {
+	.header-right .notification_dropdown {
+		position: relative;
+	}
+}
+.header-right .notification_dropdown .nav-link {
+	position: relative;
+	height: 45px;
+	width: 45px;
+	margin: 0 5px;
+	line-height: 25px;
+	text-align: center;
+	border-radius: var(--radius);
+	border: 1px solid transparent;
+	transition: all 0.2s;
+}
+.header-right .notification_dropdown .nav-link i {
+	font-size: 1.5rem;
+}
+@media only screen and (max-width: 87.5rem) {
+	.header-right .notification_dropdown .nav-link i {
+		font-size: 1.125rem;
+	}
+}
+@media only screen and (max-width: 87.5rem) {
+	.header-right .notification_dropdown .nav-link svg {
+		width: 1.55rem;
+		height: 1.55rem;
+	}
+}
+@media only screen and (max-width: 35.9375rem) {
+	.header-right .notification_dropdown .nav-link svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+}
+.header-right .notification_dropdown .nav-link:hover {
+	background: rgba(255, 255, 255, 0.18);
+	box-shadow: 0px 4px 8px 0px rgba(166, 185, 204, 0.10);
+	border-color: rgba(255, 255, 255, 0.18);
+}
+@media only screen and (max-width: 35.9375rem) {
+	.header-right .notification_dropdown .nav-link {
+		height: 35px;
+		width: 35px;
+		line-height: 16px;
+	}
+}
+.header-right .header-media {
+	width: 45px;
+	height: 45px;
+}
+.header-right .header-media img {
+	width: 100%;
+	border-radius: var(--radius);
+}
+@media only screen and (max-width: 35.9375rem) {
+	.header-right .header-media {
+		width: 35px;
+		height: 35px;
+	}
+}
+.dz-fullscreen #icon-minimize {
+	display: none;
+}
+.dz-fullscreen.active #icon-full {
+	display: none;
+}
+.dz-fullscreen.active #icon-minimize {
+	display: inline-block;
+}
+[data-headerbg="color_1"] .header .header-content {
+	border-bottom: 1px solid var(--border);
+}

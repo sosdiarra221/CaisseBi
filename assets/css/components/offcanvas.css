@@ -1,0 +1,3 @@
+.offcanvas.is-closed {
+    transform: translateX(100%);
+}

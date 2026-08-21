@@ -1,0 +1,6 @@
+[data-theme-version="dark"] .widget-timeline .timeline:before {
+    background: var(--d-bg);
+}
+[data-theme-version="dark"] .widget-timeline .timeline > li > .timeline-badge {
+    background-color: var(--d-bg) !important;
+}

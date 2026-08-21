@@ -1,0 +1,215 @@
+<script lang="ts" setup>
+import AikitContentLeft from "~/components/aikit/AikitContentLeft.vue";
+import { Collapse } from "vue-collapsed";
+
+const select = ref(true);
+</script>
+
+<template>
+  <div class="content-body default-height">
+    <div class="flex items-center justify-between relative z-1 flex-wrap py-2.5 px-5 bg-d-bg border-b border-border">
+      <h5 class="sm:text-xl text-2sm">RSS</h5>
+      <ul class="flex flex-wrap items-center">
+        <li class="breadcrumb-item"><NuxtLink to="/">Home</NuxtLink></li>
+        <li class="font-semibold before:content-['>'] before:leading-6 before:pr-2 before:float-left pl-2 text-primary"><a href="javascript:void(0)">RSS</a></li>
+      </ul>
+    </div>
+    <div class="container">
+      <!-- row -->
+      <div class="row">
+        <div class="w-full">
+          <div class="border-l-[5px] border-warning bg-card relative text-ellipsis overflow-hidden py-3 pl-4 pr-12 shadow-default rounded-lg mb-6 max-sm:text-xxs">
+            This is a demo of AIKit plugin made for you to test the experience of using the plugin. Text & images generated in this demo are dummy. In real life, AIKit will call OpenAI API and
+            generate relevant text and images based on your prompts.
+            <button type="button" class="btn-close !bg-none absolute right-0 top-1/2 -translate-y-1/2 !size-auto p-4 ms-auto max-sm:hidden">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_58_5949)">
+                  <path
+                    d="M10.0003 18.3337C14.6027 18.3337 18.3337 14.6027 18.3337 10.0003C18.3337 5.39795 14.6027 1.66699 10.0003 1.66699C5.39795 1.66699 1.66699 5.39795 1.66699 10.0003C1.66699 14.6027 5.39795 18.3337 10.0003 18.3337Z"
+                    stroke="#FF5B5B"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path d="M12.5 7.5L7.5 12.5" stroke="#FF5B5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M7.5 7.5L12.5 12.5" stroke="#FF5B5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_58_5949">
+                    <rect width="20" height="20" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+            </button>
+          </div>
+          <ul class="flex flex-wrap items-end border-b border-border -mx-7.5 max-3xl:-mx-4.5 max-sm:!-mx-3 px-7.5 max-3xl:px-6 max-sm:!px-3.6 mb-6 max-sm:text-xs" id="pills-tab">
+            <li class="inline-block">
+              <NuxtLink to="/aikit/auto-write" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white rounded-ss-lg">Auto Writer</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/scheduled" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white">Scheduler</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/repurpose" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white">Repurpose</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/rss" class="py-3.6 px-6.1 -ml-px border border-border border-b-0 -mb-px block bg-bodybg text-secondary rounded-t-lg">RSS</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/chatbot" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white">Chatbot</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/fine-tune-models" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white">Fine-tune Models</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/prompt" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white">AI Menu Prompts</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/setting" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white">Settings</NuxtLink>
+            </li>
+            <li class="inline-block">
+              <NuxtLink to="/aikit/import" class="py-2.5 px-6.1 -ml-px border border-border -mb-px block bg-card text-primary dark:text-white rounded-se-lg">Export/Import Settings</NuxtLink>
+            </li>
+          </ul>
+          <div class="grid grid-cols-12 gap-x-6">
+            <AikitContentLeft />
+            <div class="xl:col-span-8 col-span-12">
+              <div class="accordion" x-data="{selected:1}">
+                <div class="mb-5">
+                  <div class="accordion-button p-3 relative bg-card border border-border shadow-default rounded-lg" id="headingOne" role="button" @click="select = !select" :class="{ active: select }">
+                    <span class="accordion-header-icon"></span>
+                    <span class="accordion-header-text font-semibold">Prompts</span>
+                    <span class="accordion-header-indicator"></span>
+                  </div>
+                  <Collapse :when="select">
+                    <div class="py-4 px-3">
+                      <div class="flex items-center mb-1">
+                        <h6>article-title:</h6>
+                        <span class="badge badge-sm text-danger bg-dangerlight ms-1">description</span>
+                        <span class="mx-1">,</span>
+                        <span class="badge badge-sm text-danger bg-dangerlight">section-headlines</span>
+                      </div>
+                      <div class="mb-4">
+                        <textarea class="py-1.5 px-3 border border-border rounded-lg w-full duration-500 focus:border-primary bg-transparent text-2xs" id="exampleFormControlTextarea11" rows="3">
+		Generate a title for an article that discusses the following topic:
+		[[description]]
+		The article will include the following sections:
+		[[section-headlines]]
+
+		Title:
+												</textarea
+                        >
+                      </div>
+                      <div class="flex items-center mb-1">
+                        <h6>article-title:</h6>
+                        <span class="badge badge-sm text-danger bg-dangerlight ms-1">description</span>
+                        <span class="mx-1">,</span>
+                        <span class="badge badge-sm text-danger bg-dangerlight">section-headlines</span>
+                      </div>
+                      <div class="mb-4">
+                        <textarea class="py-1.5 px-3 border border-border rounded-lg w-full duration-500 focus:border-primary bg-transparent text-2xs" id="exampleFormControlTextarea11" rows="3">
+		Generate a title for an article that discusses the following topic:
+		[[description]]
+		The article will include the following sections:
+		[[section-headlines]]
+
+		Title:
+												</textarea
+                        >
+                      </div>
+                      <div class="flex items-center mb-1">
+                        <h6>article-title:</h6>
+                        <span class="badge badge-sm text-danger bg-dangerlight ms-1">description</span>
+                        <span class="mx-1">,</span>
+                        <span class="badge badge-sm text-danger bg-dangerlight">section-headlines</span>
+                      </div>
+                      <div class="mb-4">
+                        <textarea class="py-1.5 px-3 border border-border rounded-lg w-full duration-500 focus:border-primary bg-transparent text-2xs" id="exampleFormControlTextarea11" rows="3">
+		Generate a title for an article that discusses the following topic:
+		[[description]]
+		The article will include the following sections:
+		[[section-headlines]]
+
+		Title:
+												</textarea
+                        >
+                      </div>
+                      <div class="flex items-center mb-1">
+                        <h6>article-title:</h6>
+                        <span class="badge badge-sm text-danger bg-dangerlight ms-1">description</span>
+                        <span class="mx-1">,</span>
+                        <span class="badge badge-sm text-danger bg-dangerlight">section-headlines</span>
+                      </div>
+                      <div class="mb-4">
+                        <textarea class="py-1.5 px-3 border border-border rounded-lg w-full duration-500 focus:border-primary bg-transparent text-2xs" id="exampleFormControlTextarea11" rows="3">
+		Generate a title for an article that discusses the following topic:
+		[[description]]
+		The article will include the following sections:
+		[[section-headlines]]
+
+		Title:
+												</textarea
+                        >
+                      </div>
+                      <div class="flex items-center mb-1">
+                        <h6>article-title:</h6>
+                        <span class="badge badge-sm text-danger bg-dangerlight ms-1">description</span>
+                        <span class="mx-1">,</span>
+                        <span class="badge badge-sm text-danger bg-dangerlight">section-headlines</span>
+                      </div>
+                      <div class="mb-4">
+                        <textarea class="py-1.5 px-3 border border-border rounded-lg w-full duration-500 focus:border-primary bg-transparent text-2xs" id="exampleFormControlTextarea11" rows="3">
+		Generate a title for an article that discusses the following topic:
+		[[description]]
+		The article will include the following sections:
+		[[section-headlines]]
+
+		Title:
+												</textarea
+                        >
+                      </div>
+                      <div class="flex items-center mb-1">
+                        <h6>article-title:</h6>
+                        <span class="badge badge-sm text-danger bg-dangerlight ms-1">description</span>
+                        <span class="mx-1">,</span>
+                        <span class="badge badge-sm text-danger bg-dangerlight">section-headlines</span>
+                      </div>
+                      <div class="mb-4">
+                        <textarea class="py-1.5 px-3 border border-border rounded-lg w-full duration-500 focus:border-primary bg-transparent text-2xs" id="exampleFormControlTextarea2" rows="3">
+		Generate a title for an article that discusses the following topic:
+		[[description]]
+		The article will include the following sections:
+		[[section-headlines]]
+
+		Title:
+												</textarea
+                        >
+                      </div>
+                      <div class="flex items-center mb-1">
+                        <h6>article-title:</h6>
+                        <span class="badge badge-sm text-danger bg-dangerlight ms-1">description</span>
+                        <span class="mx-1">,</span>
+                        <span class="badge badge-sm text-danger bg-dangerlight">section-headlines</span>
+                      </div>
+                      <div class="">
+                        <textarea class="py-1.5 px-3 border border-border rounded-lg w-full duration-500 focus:border-primary bg-transparent text-2xs" id="exampleFormControlTextarea3" rows="3">
+		Generate a title for an article that discusses the following topic:
+		[[description]]
+		The article will include the following sections:
+		[[section-headlines]]
+
+		Title:
+												</textarea
+                        >
+                      </div>
+                    </div>
+                  </Collapse>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,39 @@
+
+.badge {
+    display: inline-block;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border: 0.0625rem solid transparent;
+}
+.badge-xl {
+    font-size: 16px;
+    padding: 0.1rem 0.9375rem;
+    line-height: 2.1875rem;
+    font-weight: 400;
+}
+.badge-lg {
+    font-size: 0.875rem;
+    padding: 0rem 0.625rem;
+    line-height: 1.875rem;
+}
+.badge-sm {
+    font-size: 0.6875rem;
+    padding: 0.3125rem 0.5rem;
+    line-height: 0.6875rem;
+}
+.badge-xs {
+    font-size: 0.5rem;
+    padding: 0rem 0.3125rem;
+    line-height: 1rem;
+    height: 16px;
+}
+.light.badge-secondary {
+    background-color: #868999;
+    color: #1F2025;
+}
+[data-theme-version="dark"] .badge {
+    --light: #F3F5F8;
+}

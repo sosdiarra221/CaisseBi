@@ -1,0 +1,31 @@
+
+@media only screen and (max-width: 47.9375rem) {
+    .mail-left-body.active {
+        left: 0;
+        background: var(--card);
+        transition: all 0.5s;
+        overflow-y: scroll;
+    }
+    .email-left-box {
+        width: 100%;
+        float: none;
+        border: none;
+        padding-bottom: 1.875rem;
+    }
+}
+
+/* @screen max-sm{
+    .email-tools-box.active:before {
+        content: '';
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vh;
+        height: 100vh;
+        background-color: #000;
+        opacity: 0.2;
+        border-radius: 0.75rem;
+        z-index: 4;
+    }
+} */

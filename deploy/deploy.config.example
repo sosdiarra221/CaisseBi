@@ -1,0 +1,30 @@
+# Copy this file to deploy/deploy.config (gitignored — it holds real server
+# details) and fill in the values from your o2switch cPanel account.
+
+# --- SSH access ---------------------------------------------------------
+# cPanel > Informations générales / Accès SSH.
+SSH_HOST="votresite.o2switch.net"
+SSH_USER="votrelogincpanel"
+SSH_PORT="22"
+
+# --- Node.js app (cPanel > "Configurer une application Node.js") -------
+# Create the app first (see deploy/README.md step 2), THEN come back and
+# fill these in with what cPanel shows you for that app.
+
+# Absolute path cPanel shows as "Racine du dossier de l'application", e.g.
+# /home/votrelogincpanel/caissebi
+REMOTE_APP_PATH="/home/votrelogincpanel/caissebi"
+
+# cPanel shows a line like:
+#   source /home/votrelogincpanel/nodevenv/caissebi/20/bin/activate
+# under "Commande pour entrer dans l'environnement virtuel". Paste the full
+# path to the "activate" file here (without the leading "source ").
+REMOTE_NODE_ENV_ACTIVATE="/home/votrelogincpanel/nodevenv/caissebi/20/bin/activate"
+
+# Where the bare git repo will live on the server, relative to the SSH
+# user's home directory. setup-remote.sh creates this; you don't need to
+# create it yourself.
+REMOTE_GIT_DIR="git/caissebi.git"
+
+# --- Public domain (just used for the friendly message at the end) -----
+DOMAIN="votredomaine.com"

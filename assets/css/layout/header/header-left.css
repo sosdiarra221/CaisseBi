@@ -1,0 +1,103 @@
+.header-left {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.header-left .breadcrumb {
+    margin-bottom: 0;
+}
+.header-left .agenda a {
+    border-radius: 1.75rem;
+}
+.header-left .agenda a i {
+    margin-right: 0.75rem;
+}
+@media only screen and (max-width: 87.5rem) {
+    .header-left .agenda a i {
+        margin-right: 0rem;
+   }
+}
+@media only screen and (max-width: 93.75rem) {
+    .header-left .agenda a {
+        font-size: 0;
+        border-radius: 0.75rem;
+        padding: 0.8125rem 0.9375rem;
+   }
+    .header-left .agenda a i {
+        font-size: 1.25rem;
+        margin-right: 0;
+   }
+}
+@media only screen and (max-width: 35.9375rem) {
+    .header-left .agenda {
+        display: none;
+   }
+}
+.header-left .dashboard_bar {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--secondary);
+}
+@media only screen and (max-width: 74.9375rem) {
+    .header-left .dashboard_bar {
+        font-size: 2.125rem;
+   }
+}
+@media only screen and (max-width: 47.9375rem) {
+    .header-left .dashboard_bar {
+        display: none;
+   }
+}
+.header-left .dashboard_bar.sub-bar {
+    font-size: 1.875rem;
+}
+.header-left .search-area {
+    width: 18.563rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: var(--radius);
+}
+.search-area button svg path {
+    stroke: #fff;
+}
+.header-left .search-area input::placeholder,
+.header-left .search-area .form-control {
+    color: #fff !important;
+}
+@media only screen and (max-width: 100rem) {
+    .header-left .search-area {
+        width: 18.75rem;
+   }
+}
+@media only screen and (max-width: 47.9375rem) {
+    .header-left .search-area {
+        display: none;
+   }
+}
+@media only screen and (max-width: 87.5rem) {
+    .header-left .search-area .form-control {
+        height: 3rem;
+   }
+}
+.header-left .search-area .form-control::placeholder {
+    font-size: 15px;
+    font-weight: 500;
+    color: #6f767e;
+}
+.header-left .search-area .input-group-text {
+    background-color: transparent;
+    border: 0;
+    padding-right: 0;
+}
+.header-left .search-area .input-group-text a i {
+    font-size: 1.5rem;
+}
+@media only screen and (max-width: 87.5rem) {
+    .header-left .search-area .input-group-text {
+        height: 3rem;
+   }
+}
+.header-left .search-area button {
+    border: 0;
+    background: transparent;
+}

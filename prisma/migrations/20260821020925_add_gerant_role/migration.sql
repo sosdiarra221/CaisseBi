@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `rolepermission` MODIFY `role` ENUM('OWNER', 'MANAGER', 'GERANT', 'CASHIER') NOT NULL;
+
+-- AlterTable
+ALTER TABLE `user` MODIFY `role` ENUM('OWNER', 'MANAGER', 'GERANT', 'CASHIER') NOT NULL DEFAULT 'CASHIER';

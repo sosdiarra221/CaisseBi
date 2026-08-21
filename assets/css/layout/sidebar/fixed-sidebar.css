@@ -1,0 +1,180 @@
+.card {
+    margin-bottom: 1.563rem;
+    background-color: var(--card);
+    transition: all .5s ease-in-out;
+    position: relative;
+    border: 0rem solid transparent;
+    border-radius: 0.5rem;
+    height: calc(100% - 25px);
+    border: 1px solid var(--border);
+    box-shadow: 0px 5px 15px 0px rgba(17, 17, 17, 0.05);
+	display: flex;
+	flex-direction: column;
+}
+.chatbox .chatbox-close {
+	position: absolute;
+	transition: all 0.2s;
+	width: 0;
+	height: 100%;
+	right: 21.25rem;
+	background: #000;
+	z-index: 1;
+	opacity: 0.1;
+	cursor: pointer;
+}
+.chatbox .card-fotter {
+	padding: 0.75rem 1rem;
+}
+.chatbox.active {
+	right: 0;
+}
+.chatbox.active .chatbox-close {
+	width: 100vw;
+}
+.chatbox .type_msg {
+	padding-top: 0.625rem;
+}
+.chatbox .nav {
+	background: var(--rgba-primary-1);
+}
+.chatbox .img_cont .icon {
+	color: #fff;
+}
+.chatbox .img_cont.primary {
+	background: var(--rgba-primary-1);
+	color: var(--primary);
+}
+.chatbox .img_cont.warning {
+	background: var(--warning-light);
+	color: var(--warning);
+}
+.chatbox .img_cont.success {
+	background: var(--success-light);
+	color: var(--success);
+}
+.chatbox .img_cont.info {
+	background: var(--info-light);
+	color: var(--info);
+}
+.chatbox .img_cont img {
+	width: 100%;
+}
+.chatbox .img_cont .online_icon {
+	background: var(--success);
+	position: absolute;
+	width: 0.75rem;
+	height: 0.75rem;
+	border-radius: 0.9375rem;
+	right: -0.0625rem;
+	bottom: 0rem;
+	border: 0.125rem solid #fff;
+}
+.chatbox .img_cont .online_icon.offline {
+	background: var(--danger);
+}
+.chatbox .card {
+	box-shadow: none;
+}
+.chatbox .search {
+	height: 2.5rem;
+}
+.chatbox .user_info p {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.chatbox .contacts li > div {
+	display: flex;
+	align-items: center;
+}
+.chatbox .contacts li:hover {
+	background: var(--rgba-primary-1);
+	color: var(--primary);
+}
+.chatbox .contacts .name-first-letter {
+	background: var(--primary);
+	padding: 0.25rem 1rem;
+	font-weight: 700;
+	color: #fff;
+	position: sticky;
+	top: 0;
+	z-index: 1;
+}
+.chatbox .contacts_body {
+	height: calc(100vh - 200px);
+}
+.chatbox .card-header h6 {
+	font-size: 0.9375rem;
+}
+.chatbox .card-header p {
+	line-height: 1.2;
+	font-size: 0.75rem;
+	color: var(--body-color);
+}
+.chatbox .msg_cotainer {
+	background: var(--primary);
+	margin-left: 0.625rem;
+	border-radius: 0 var(--radius) var(--radius) var(--radius);
+	padding: 0.625rem 0.9375rem;
+	color: #fff;
+	position: relative;
+}
+.chatbox .msg_cotainer .msg_time {
+	display: block;
+	font-size: 0.6875rem;
+	color: #fff;
+	margin-top: 0.3125rem;
+	opacity: 0.5;
+}
+.chatbox .msg_cotainer:after {
+	content: "";
+	position: absolute;
+	left: -0.625rem;
+	border-right: 0.625rem solid var(--primary);
+	border-bottom: 0.625rem solid transparent;
+	border-top: 0rem solid;
+	top: 0;
+}
+.chatbox .msg_cotainer_send:after {
+	content: "";
+	position: absolute;
+	right: -0.625rem;
+	border-left: 0.625rem solid var(--body-bg);
+	border-bottom: 0.625rem solid transparent;
+	border-top: 0rem solid;
+	top: 0;
+}
+.chatbox .type_msg .form-control {
+	padding: 0.625rem 0;
+	height: 3.125rem;
+	border: 0;
+	resize: none;
+}
+.chatbox .type_msg .form-control:focus {
+	z-index: 0;
+}
+.chatbox .type_msg .btn {
+	font-size: 1.125rem;
+	border-radius: 2.375rem !important;
+	width: 2.375rem;
+	height: 2.375rem;
+	padding: 0;
+	margin-top: 0.375rem;
+}
+.chatbox .note_card .contacts li {
+	padding: 0.75rem 1rem;
+}
+@media only screen and (max-width: 36rem) {
+	.chatbox {
+		width: 17.5rem;
+   }
+	.chatbox .chatbox-close {
+		right: 17.5rem;
+   }
+}
+@media only screen and (max-width: 35.9375rem) {
+    .card {
+        margin-bottom: 0.938rem;
+        height: calc(100% - 0.938rem);
+    }
+}

@@ -1,0 +1,25 @@
+.footer {
+    padding-left: 17.5rem;
+    font-size: 0.813rem;
+    font-weight: 400;
+    border-top: 1px solid var(--border);
+}
+.footer .copyright {
+    padding: 0.9375rem;
+}
+.footer .copyright p {
+    text-align: center;
+    margin: 0;
+    color: #918f8f;
+}
+.footer .copyright a {
+    color: var(--primary) ! important;
+}
+[data-theme-version="dark"] .footer {
+    background-color: #272627;
+}
+@media only screen and (max-width: 61.9375rem) {
+    .footer {
+        padding-left: 3.8rem;
+   }
+}

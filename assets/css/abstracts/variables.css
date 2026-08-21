@@ -1,0 +1,138 @@
+:root {
+
+    --primary: #1D69D6;
+    --primary-hover: #1753a9;
+    --primary-dark: #0b274f;
+	
+	/*  Primary Light */
+	--rgba-primary-1 : rgba(29, 105, 214, 0.1);
+	--rgba-primary-2 : rgba(29, 105, 214, 0.2);
+	--rgba-primary-3 : rgba(29, 105, 214, 0.3);
+	--rgba-primary-5 : rgba(29, 105, 214, 0.5);
+	--rgba-primary-8 : rgba(29, 105, 214, 0.8);
+
+	/* Secodary */
+    --secondary: #1F2025;
+    --secondary-dark: #131313;
+	--rgba-secondary-1 :#2c2c2c1a;
+	--secondarylight :#868999;
+
+	--nav-headbg: #FFFFFF;
+    --sidebar-bg: #FFFFFF;
+    --headerbg: #FCFCFC;
+	
+	--card: #fff;
+	--dark: #444444;
+	--text-dark: #000;
+	
+    --border: #E9ECEF;
+    --body-bg: #FCFCFC;
+	--body-color: #6F767E;
+	--light: #F3F5F8;
+    --d-bg: #fff;
+
+    --success: #3AC977;
+    --success-light: #e7fffb;
+
+    --warning: #f89d16;
+    --warning-light: #fde6c3;
+
+    --info-light: #e1f2fc;
+
+    --danger: #FF5E5E;
+    --danger-light: #ffdede;
+
+	--purple: #BB6BD9;
+
+    --placeholder-color: #cccccc8a;
+	
+    /* Modal */
+    --modal-width: 500px;
+    --modal-header-padding-x: 1rem;
+    --modal-header-padding-y: 1rem;
+    
+    /*  Solid Color */
+    --white: #fff;
+    --black: #000;
+
+	/*  Light Version Color */
+	--l-ctd: #464a53;
+	--l-ctl: #828690;
+	--l-border: #eaeaea;
+	--l-bg: #f2f4fa;
+	--heading: #333;
+
+	/*  Social Colors */
+	--facebook: #3b5998;
+	--drive: #2196F3;
+	--envato: #7CB342;
+	--flickr: #3F51B5;
+	--photo: #F44336;
+	--dropbox: #1E88E5;
+	--apple: #01010F;
+	--twitter: #1da1f2;
+	--youtube: #FF0000;
+	--google-plus: #db4439;
+	--linkedin: #007bb6;
+	--instagram: #c32aa3;
+	--pinterest: #bd081c;
+	--google: #4285f4;
+	--snapchat: #fffc00;
+	--whatsapp: #25d366;
+	--tumblr: #35465d;
+	--reddit: #ff4500;
+	--spotify: #1ed760;
+	--yahoo: #430297;
+	--dribbble: #ea4c89;
+	--skype: #00aff0;
+	--quora: #aa2200;
+	--riverBed: #4C585C;
+	--vimeo: #1ab7ea;
+
+	--drivehover: #0c7cd5;
+	--envatohover: #628e34;
+	--linkedinhover: #145ca4;
+	--skypehover: #0286c2;
+	--flickrhover: #32408f;
+	--photohover: #ea1c0d;
+	--vimeohover: #008fa1;
+	--dropboxhover: #166dba;
+	--facebookhover: #0b5fcc;
+	--snapchathover: #ffe608;
+	--dribbblehover: #e2175b;
+	--pinteresthover: #ab2424;
+	--youtubehover: #ea1c0d;
+	--whatsapphover: #3d8b40;
+	--applehover: #01010F;
+	--google-plushover: #ad321a;
+
+	/* utility variables */
+	--radius: 0.375rem; 
+	--radius-lg:0.625rem;
+	--radius-sm:0.625rem;
+	--radius-xs:0.25rem;
+
+	--loader--width: 15.625rem;
+	--loader-dot--size: 1.25rem;
+
+	/* sidebar */
+	--dz-sidebar-pos: absolute;
+	--dz-sidebar-style: full;
+
+	/* Font-family */
+	--dz-font-family: 'Inter', sans-serif;
+	
+	/* utility variables */
+	--radius: 0.5rem; 
+	--radius-lg:0.625rem;
+	--radius-sm:0.375rem;
+	--radius-xs:0.25rem;
+
+
+	--loader--width: 15.625rem;
+	--loader-dot--size: 1.25rem;
+
+	--h-space:20px;
+	--wallet-space:31.2rem;
+
+}

@@ -1,0 +1,84 @@
+.btn-close{
+    --btn-close-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+    --btn-close-opacity: 0.5;
+    --btn-close-color: #000;
+    box-sizing: content-box;
+    width: 1em;
+    height: 1em;
+    background: transparent var(--btn-close-bg) center/1em auto no-repeat;
+    opacity: var(--btn-close-opacity);
+}
+.modal-dialog {
+    --modal-margin: 1.75rem;
+    position: relative;
+    width: auto;
+    margin: var(--modal-margin);
+    pointer-events: none;
+    transition: transform 0.3s ease-out;
+}
+.modal-dialog-center {
+    min-height: calc(100% - 3.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - var(--modal-margin) * 2);
+}
+@media (min-width: 992px){
+    .modal-lg, .modal-xl {
+        --modal-width: 800px;
+    }
+}
+@media (min-width: 576px){
+    .modal-sm {
+        --modal-width: 300px;
+    }
+}
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: var(--modal-width);
+        margin-right: auto;
+        margin-left: auto;
+        --modal-margin: 1.75rem;
+    }
+}
+@media (min-width: 360px) {
+    .modal-dialog {
+        --modal-margin: 0.5rem !important;
+    }
+}
+pre {
+    display: block;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    overflow: auto;
+    font-size: 0.875em;
+    -moz-tab-size: 16;
+    tab-size: 2;
+}
+.modal {
+	pointer-events:none;
+}
+@media (min-width: 576px) {
+    .modal {
+        --modal-margin: 1.75rem;
+        --modal-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+}
+[type="file"]::-webkit-file-upload-button:not(.fallback [type="file"]::-webkit-file-upload-button) {
+    border: 0;
+    border-right: 1px solid black;
+    color: var(--body-color);
+    padding: 0 10px;
+    margin: 0;
+    margin-right: 10px;
+    height: 47px;
+    background-color: #f8f9fa;
+}
+
+[data-theme-version="dark"] .modal-dialog {
+    --body-bg: #242424;
+}
