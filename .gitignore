@@ -26,8 +26,9 @@ logs
 .env.*
 !.env.example
 
-# User-uploaded content
-public/uploads/
+# User-uploaded content (kept outside public/ and .output/ so it survives
+# rebuilds — see server/routes/uploads/products/[filename].get.ts)
+storage/uploads/
 
 # Real o2switch connection details (copy deploy.config.example)
 deploy/deploy.config

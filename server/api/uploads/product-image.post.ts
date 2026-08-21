@@ -33,7 +33,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Image trop volumineuse (2 Mo max)" });
   }
 
-  const uploadsDir = path.join(process.cwd(), "public", "uploads", "products");
+  // Deliberately outside public/ (copied into .output/public at build time —
+  // anything written there after the build is invisible to the running
+  // server) and outside .output/ itself (wiped and rebuilt on every deploy).
+  // Served back by server/routes/uploads/products/[filename].get.ts instead
+  // of Nitro's static public-asset pipeline, so uploads survive rebuilds.
+  const uploadsDir = path.join(process.cwd(), "storage", "uploads", "products");
   await mkdir(uploadsDir, { recursive: true });
 
   const filename = `${randomUUID()}${extension}`;
