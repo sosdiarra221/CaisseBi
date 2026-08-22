@@ -115,8 +115,8 @@ const columns = [
     render: (_d: any, type: string) => {
       if (type !== "display") return "";
       return `<div class="flex justify-end gap-1.5">
-        <button type="button" class="js-edit row-action-btn text-primary hover:bg-primarylight" title="Modifier"><i class="fa fa-pen"></i></button>
-        <button type="button" class="js-delete row-action-btn text-danger hover:bg-dangerlight" title="Supprimer"><i class="fa fa-trash"></i></button>
+        <button type="button" class="js-edit row-action-btn text-primary bg-primarylight hover:bg-primary hover:text-white" title="Modifier"><i class="fa fa-pen"></i></button>
+        <button type="button" class="js-delete row-action-btn text-danger bg-dangerlight hover:bg-danger hover:text-white" title="Supprimer"><i class="fa fa-trash"></i></button>
       </div>`;
     },
   },

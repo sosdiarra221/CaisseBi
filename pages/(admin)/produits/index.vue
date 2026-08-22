@@ -217,8 +217,8 @@ const columns = [
     render: (active: boolean, type: string) => {
       if (type !== "display") return active ? 1 : 0;
       return active
-        ? '<span class="text-success">Actif</span>'
-        : '<span class="text-danger">Désactivé</span>';
+        ? '<span class="rounded-full bg-successlight px-2.5 py-1 text-2xs font-semibold text-success">Actif</span>'
+        : '<span class="rounded-full bg-dangerlight px-2.5 py-1 text-2xs font-semibold text-danger">Désactivé</span>';
     },
   },
   {
@@ -231,8 +231,8 @@ const columns = [
       const toggleIcon = row.active ? "fa-ban" : "fa-rotate-left";
       const toggleTitle = row.active ? "Désactiver" : "Réactiver";
       return `<div class="flex justify-end gap-1.5">
-        <button type="button" class="js-edit row-action-btn text-primary hover:bg-primarylight" title="Modifier"><i class="fa fa-pen"></i></button>
-        <button type="button" class="js-toggle row-action-btn text-danger hover:bg-dangerlight" title="${toggleTitle}"><i class="fa ${toggleIcon}"></i></button>
+        <button type="button" class="js-edit row-action-btn text-primary bg-primarylight hover:bg-primary hover:text-white" title="Modifier"><i class="fa fa-pen"></i></button>
+        <button type="button" class="js-toggle row-action-btn text-danger bg-dangerlight hover:bg-danger hover:text-white" title="${toggleTitle}"><i class="fa ${toggleIcon}"></i></button>
       </div>`;
     },
   },

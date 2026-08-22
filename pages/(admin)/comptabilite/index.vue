@@ -14,8 +14,55 @@ function firstDayOfMonthStr(): string {
 }
 const todayStr = new Date().toISOString().slice(0, 10);
 
+type Preset = "day" | "week" | "month" | "year";
+
 const from = ref(firstDayOfMonthStr());
 const to = ref(todayStr);
+const activePreset = ref<Preset | null>("month");
+
+const presets: { id: Preset; label: string }[] = [
+  { id: "day", label: "Jour" },
+  { id: "week", label: "Semaine" },
+  { id: "month", label: "Mois" },
+  { id: "year", label: "Année" },
+];
+
+function toDateStr(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+function applyPreset(preset: Preset) {
+  const now = new Date();
+  let start: Date;
+  let end: Date;
+
+  if (preset === "day") {
+    start = new Date(now);
+    end = new Date(now);
+  } else if (preset === "week") {
+    const day = now.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    start = new Date(now);
+    start.setDate(now.getDate() + diffToMonday);
+    end = new Date(start);
+    end.setDate(start.getDate() + 6);
+  } else if (preset === "month") {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  } else {
+    start = new Date(now.getFullYear(), 0, 1);
+    end = new Date(now.getFullYear(), 11, 31);
+  }
+
+  from.value = toDateStr(start);
+  to.value = toDateStr(end);
+  activePreset.value = preset;
+  applyFilter();
+}
+
+function onManualDateChange() {
+  activePreset.value = null;
+}
 
 const { data: report, refresh } = await useFetch("/api/reports/accounting", {
   query: { from, to },
@@ -163,22 +210,45 @@ function printReport() {
     <div class="container">
       <!-- Filter bar: excluded from print -->
       <div class="card !h-auto mb-6 accounting-print-hide">
-        <div class="p-5 flex flex-wrap items-end gap-3">
-          <NuxtLink to="/caisse" class="btn border border-border h-10">
-            <i class="fa fa-arrow-left mr-2"></i>Retour
-          </NuxtLink>
-          <div>
-            <label class="mb-1 block">Du</label>
-            <input v-model="from" type="date" class="h-10 rounded-lg border border-border bg-transparent px-3" />
+        <div class="p-5">
+          <div class="flex flex-wrap items-center gap-3">
+            <NuxtLink to="/caisse" class="btn border border-border h-10 shrink-0">
+              <i class="fa fa-arrow-left mr-2"></i>Retour
+            </NuxtLink>
+            <div class="flex items-center gap-2 text-2sm font-semibold" :style="{ color: NAVY }">
+              <span class="flex size-7 items-center justify-center rounded-full bg-primarylight text-primary">
+                <i class="fa fa-filter text-2xs"></i>
+              </span>
+              Période
+            </div>
+            <button type="button" class="btn h-10 ml-auto text-white" :style="{ background: NAVY }" @click="printReport">
+              <i class="fa fa-print mr-2"></i>Imprimer / Exporter en PDF
+            </button>
           </div>
-          <div>
-            <label class="mb-1 block">Au</label>
-            <input v-model="to" type="date" class="h-10 rounded-lg border border-border bg-transparent px-3" />
+
+          <div class="mt-3 flex flex-wrap items-end gap-3">
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                v-for="p in presets"
+                :key="p.id"
+                type="button"
+                class="shrink-0 rounded-full px-3.5 py-1.5 text-2xs font-semibold duration-200"
+                :class="activePreset === p.id ? 'bg-primary text-white' : 'bg-bodybg text-body border border-border hover:border-primary hover:text-primary'"
+                @click="applyPreset(p.id)"
+              >
+                {{ p.label }}
+              </button>
+            </div>
+            <div>
+              <label class="mb-1 block text-2xs text-body">Du</label>
+              <input v-model="from" type="date" class="h-10 rounded-lg border border-border bg-transparent px-3 text-2sm" @change="onManualDateChange" />
+            </div>
+            <div>
+              <label class="mb-1 block text-2xs text-body">Au</label>
+              <input v-model="to" type="date" class="h-10 rounded-lg border border-border bg-transparent px-3 text-2sm" @change="onManualDateChange" />
+            </div>
+            <button type="button" class="btn bg-primary text-white h-10" @click="applyFilter">Afficher</button>
           </div>
-          <button type="button" class="btn bg-primary text-white h-10" @click="applyFilter">Afficher</button>
-          <button type="button" class="btn h-10 ml-auto text-white" :style="{ background: NAVY }" @click="printReport">
-            <i class="fa fa-print mr-2"></i>Imprimer / Exporter en PDF
-          </button>
         </div>
       </div>
 

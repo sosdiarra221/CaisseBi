@@ -86,12 +86,19 @@ function onManualDateChange() {
   activePreset.value = null;
 }
 
+// Resets back to the sensible default (current month), not to a truly empty
+// filter — an unfiltered "since the beginning of time" list is exactly what
+// the default month view exists to avoid.
 function resetFilters() {
-  fromDate.value = "";
-  toDate.value = "";
   method.value = "";
-  activePreset.value = null;
+  applyPreset("month");
 }
+
+const isFiltered = computed(() => activePreset.value !== "month" || !!method.value);
+
+// Defaults to the current month rather than an unfiltered (potentially huge)
+// history list — matches the other date-filtered admin views.
+applyPreset("month");
 
 const from = computed(() => (fromDate.value ? toRange(fromDate.value) : ""));
 const to = computed(() => (toDate.value ? toRange(toDate.value, true) : ""));
@@ -183,8 +190,8 @@ const columns = [
       if (type !== "display") return "";
       const canCancel = user.value?.role !== "CASHIER" && row.status === "COMPLETED";
       return `<div class="flex justify-end gap-1.5">
-        <button type="button" class="js-view row-action-btn text-primary hover:bg-primarylight" title="Voir le ticket"><i class="fa fa-eye"></i></button>
-        ${canCancel ? `<button type="button" class="js-cancel row-action-btn text-danger hover:bg-dangerlight" title="Annuler la vente"><i class="fa fa-ban"></i></button>` : ""}
+        <button type="button" class="js-view row-action-btn text-primary bg-primarylight hover:bg-primary hover:text-white" title="Voir le ticket"><i class="fa fa-eye"></i></button>
+        ${canCancel ? `<button type="button" class="js-cancel row-action-btn text-danger bg-dangerlight hover:bg-danger hover:text-white" title="Annuler la vente"><i class="fa fa-ban"></i></button>` : ""}
       </div>`;
     },
   },
@@ -224,54 +231,68 @@ const tableOptions = {
           <h4 class="text-base">Ventes</h4>
         </div>
         <div class="p-5">
-          <div class="mb-4 flex flex-wrap items-end gap-4">
-            <div class="flex flex-wrap gap-2">
+          <div class="mb-4 rounded-xl border border-border bg-bodybg/60 p-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2 text-2sm font-semibold" :style="{ color: NAVY }">
+                <span class="flex size-7 items-center justify-center rounded-full bg-primarylight text-primary">
+                  <i class="fa fa-filter text-2xs"></i>
+                </span>
+                Période
+              </div>
               <button
-                v-for="p in presets"
-                :key="p.id"
+                v-if="isFiltered"
                 type="button"
-                class="shrink-0 rounded-full px-4 py-2 text-sm font-semibold duration-200"
-                :class="activePreset === p.id ? 'bg-primary text-white' : 'bg-primarylight text-primary'"
-                @click="applyPreset(p.id)"
+                class="flex items-center gap-1.5 text-2xs font-semibold text-body hover:text-danger"
+                @click="resetFilters"
               >
-                {{ p.label }}
+                <i class="fa fa-rotate-left"></i> Réinitialiser
               </button>
             </div>
 
-            <div class="flex flex-wrap items-end gap-3">
-              <div>
-                <label class="mb-1 block text-2xs text-body">Du</label>
-                <input
-                  v-model="fromDate"
-                  type="date"
-                  class="h-10 rounded-lg border border-border bg-transparent px-3"
-                  @change="onManualDateChange"
-                />
+            <div class="mt-3 flex flex-wrap items-end gap-3">
+              <div class="flex flex-wrap gap-1.5">
+                <button
+                  v-for="p in presets"
+                  :key="p.id"
+                  type="button"
+                  class="shrink-0 rounded-full px-3.5 py-1.5 text-2xs font-semibold duration-200"
+                  :class="activePreset === p.id ? 'bg-primary text-white' : 'bg-card text-body border border-border hover:border-primary hover:text-primary'"
+                  @click="applyPreset(p.id)"
+                >
+                  {{ p.label }}
+                </button>
               </div>
-              <div>
-                <label class="mb-1 block text-2xs text-body">Au</label>
-                <input
-                  v-model="toDate"
-                  type="date"
-                  class="h-10 rounded-lg border border-border bg-transparent px-3"
-                  @change="onManualDateChange"
-                />
+
+              <div class="ml-auto flex flex-wrap items-end gap-2.5">
+                <div>
+                  <label class="mb-1 block text-2xs text-body">Du</label>
+                  <input
+                    v-model="fromDate"
+                    type="date"
+                    class="h-10 rounded-lg border border-border bg-card px-3 text-2sm"
+                    @change="onManualDateChange"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1 block text-2xs text-body">Au</label>
+                  <input
+                    v-model="toDate"
+                    type="date"
+                    class="h-10 rounded-lg border border-border bg-card px-3 text-2sm"
+                    @change="onManualDateChange"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1 block text-2xs text-body">Paiement</label>
+                  <select v-model="method" class="h-10 rounded-lg border border-border bg-card px-3 text-2sm">
+                    <option value="">Tous</option>
+                    <option value="CASH">Espèces</option>
+                    <option value="CARD">Carte</option>
+                    <option value="WAVE">Wave</option>
+                    <option value="ORANGE_MONEY">Orange Money</option>
+                  </select>
+                </div>
               </div>
-              <select v-model="method" class="h-10 rounded-lg border border-border bg-transparent px-3">
-                <option value="">Tous les paiements</option>
-                <option value="CASH">Espèces</option>
-                <option value="CARD">Carte</option>
-                <option value="WAVE">Wave</option>
-                <option value="ORANGE_MONEY">Orange Money</option>
-              </select>
-              <button
-                v-if="fromDate || toDate || method"
-                type="button"
-                class="h-10 text-2sm text-body hover:text-danger"
-                @click="resetFilters"
-              >
-                Réinitialiser
-              </button>
             </div>
           </div>
 
