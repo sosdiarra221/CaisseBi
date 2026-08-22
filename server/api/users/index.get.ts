@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
   return prisma.user.findMany({
     where: { companyId: user.companyId },
-    select: { id: true, name: true, email: true, role: true, active: true, createdAt: true },
+    select: { id: true, name: true, email: true, username: true, role: true, active: true, createdAt: true },
     orderBy: { name: "asc" },
   });
 });

@@ -5,11 +5,14 @@ const { fetch: refreshSession } = useUserSession();
 
 const NAVY = "#182B6B";
 
-const email = ref("admin@caissebi.com");
-const password = ref("");
-const hide = ref(false);
+const username = ref("");
+const pin = ref("");
 const loading = ref(false);
 const errorMessage = ref("");
+
+function onPinInput() {
+  pin.value = pin.value.replace(/\D/g, "").slice(0, 4);
+}
 
 async function submit() {
   errorMessage.value = "";
@@ -17,7 +20,7 @@ async function submit() {
   try {
     const user = await $fetch("/api/auth/login", {
       method: "POST",
-      body: { email: email.value, password: password.value },
+      body: { username: username.value, pin: pin.value },
     });
     await refreshSession();
     await navigateTo(user.role === "CASHIER" ? "/pos" : "/");
@@ -46,32 +49,33 @@ async function submit() {
 
           <div class="mb-5">
             <label class="mb-1.5 block text-2sm font-semibold" :style="{ color: NAVY }">
-              Email<span class="text-danger"> *</span>
+              Identifiant<span class="text-danger"> *</span>
             </label>
             <input
-              v-model="email"
-              type="email"
+              v-model="username"
+              type="text"
+              autocomplete="username"
               required
+              autofocus
               class="h-12 w-full rounded-lg border border-border bg-transparent px-3.5 text-base text-[#1a1a2e] duration-200 focus:border-[#F5A524] focus:outline-none"
             />
           </div>
 
-          <div class="mb-6 relative">
+          <div class="mb-6">
             <label class="mb-1.5 block text-2sm font-semibold" :style="{ color: NAVY }">
-              Mot de passe<span class="text-danger"> *</span>
+              Code PIN<span class="text-danger"> *</span>
             </label>
             <input
-              v-model="password"
-              :type="!hide ? 'password' : 'text'"
+              v-model="pin"
+              type="text"
+              inputmode="numeric"
+              maxlength="4"
+              pattern="\d{4}"
+              placeholder="••••"
               required
-              class="h-12 w-full rounded-lg border border-border bg-transparent px-3.5 pr-11 text-base text-[#1a1a2e] duration-200 focus:border-[#F5A524] focus:outline-none"
+              class="h-12 w-full rounded-lg border border-border bg-transparent px-3.5 text-center text-xl tracking-[0.5em] text-[#1a1a2e] duration-200 focus:border-[#F5A524] focus:outline-none"
+              @input="onPinInput"
             />
-            <span
-              class="absolute right-3.5 top-[2.55rem] cursor-pointer text-body"
-              @click="hide = !hide"
-            >
-              <i class="fa" :class="hide ? 'fa-eye' : 'fa-eye-slash'"></i>
-            </span>
           </div>
 
           <button

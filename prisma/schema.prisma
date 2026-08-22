@@ -51,6 +51,7 @@ model User {
   company   Company  @relation(fields: [companyId], references: [id])
   name      String
   email     String   @unique
+  username  String   @unique
   password  String
   pinCode   String?
   role      Role     @default(CASHIER)

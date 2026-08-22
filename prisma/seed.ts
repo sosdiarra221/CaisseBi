@@ -23,12 +23,15 @@ const DEFAULT_PIN = "1234";
 
 const OWNER_NAME = "Gora Pene";
 const OWNER_EMAIL = "admin@caissebi.com";
+const OWNER_USERNAME = "admin";
 
 const MANAGER_NAME = "Fatou Ndiaye";
 const MANAGER_EMAIL = "manager@caissebi.com";
+const MANAGER_USERNAME = "manager";
 
 const CASHIER_NAME = "Mamadou Diop";
 const CASHIER_EMAIL = "caisse@caissebi.com";
+const CASHIER_USERNAME = "caisse";
 
 async function main() {
   const company = await prisma.company.upsert({
@@ -55,11 +58,12 @@ async function main() {
 
   const owner = await prisma.user.upsert({
     where: { email: OWNER_EMAIL },
-    update: { pinCode: seededPin },
+    update: { pinCode: seededPin, username: OWNER_USERNAME },
     create: {
       companyId: company.id,
       name: OWNER_NAME,
       email: OWNER_EMAIL,
+      username: OWNER_USERNAME,
       password: await hashPassword(DEFAULT_PASSWORD),
       pinCode: seededPin,
       role: "OWNER",
@@ -68,11 +72,12 @@ async function main() {
 
   const manager = await prisma.user.upsert({
     where: { email: MANAGER_EMAIL },
-    update: { pinCode: seededPin },
+    update: { pinCode: seededPin, username: MANAGER_USERNAME },
     create: {
       companyId: company.id,
       name: MANAGER_NAME,
       email: MANAGER_EMAIL,
+      username: MANAGER_USERNAME,
       password: await hashPassword(DEFAULT_PASSWORD),
       pinCode: seededPin,
       role: "MANAGER",
@@ -81,11 +86,12 @@ async function main() {
 
   const cashier = await prisma.user.upsert({
     where: { email: CASHIER_EMAIL },
-    update: { pinCode: seededPin },
+    update: { pinCode: seededPin, username: CASHIER_USERNAME },
     create: {
       companyId: company.id,
       name: CASHIER_NAME,
       email: CASHIER_EMAIL,
+      username: CASHIER_USERNAME,
       password: await hashPassword(DEFAULT_PASSWORD),
       pinCode: seededPin,
       role: "CASHIER",
@@ -156,11 +162,10 @@ async function main() {
 
   console.log("Seed terminé.");
   console.log(`Entreprise : ${company.name}`);
-  console.log(`Mot de passe par défaut (tous les comptes) : ${DEFAULT_PASSWORD}`);
-  console.log(`Code PIN par défaut (tous les comptes) : ${DEFAULT_PIN}`);
-  console.log(`Compte administrateur : ${owner.email}`);
-  console.log(`Compte manager : ${manager.email}`);
-  console.log(`Compte caissier : ${cashier.email}`);
+  console.log(`Connexion : identifiant + code PIN (${DEFAULT_PIN} par défaut pour tous les comptes)`);
+  console.log(`Compte administrateur : ${owner.username} (${owner.email})`);
+  console.log(`Compte manager : ${manager.username} (${manager.email})`);
+  console.log(`Compte caissier : ${cashier.username} (${cashier.email})`);
   console.log(`Caisse : ${register.name}`);
 }
 

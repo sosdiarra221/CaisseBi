@@ -33,24 +33,26 @@ const errorMessage = ref("");
 const form = reactive({
   name: "",
   email: "",
+  username: "",
   password: "",
   pinCode: "",
   role: "CASHIER" as "OWNER" | "MANAGER" | "GERANT" | "CASHIER",
 });
 
-// 4-digit PIN, but optional — leave blank to skip setting one (create) or to
-// keep the current PIN unchanged (edit), mirroring the password field.
+// 4-digit PIN — required on create (it's now the login credential, along
+// with the identifiant), optional on edit (leave blank to keep the current
+// PIN unchanged, mirroring the password field).
 const pinCodeValid = computed(() => !form.pinCode || /^\d{4}$/.test(form.pinCode));
 
 function openCreate() {
   editing.value = null;
-  Object.assign(form, { name: "", email: "", password: "", pinCode: "", role: "CASHIER" });
+  Object.assign(form, { name: "", email: "", username: "", password: "", pinCode: "", role: "CASHIER" });
   showForm.value = true;
 }
 
 function openEdit(u: any) {
   editing.value = u;
-  Object.assign(form, { name: u.name, email: u.email, password: "", pinCode: "", role: u.role });
+  Object.assign(form, { name: u.name, email: u.email, username: u.username, password: "", pinCode: "", role: u.role });
   showForm.value = true;
 }
 
@@ -63,13 +65,19 @@ async function save() {
   errorMessage.value = "";
   try {
     if (editing.value) {
-      const body: any = { name: form.name, role: form.role };
+      const body: any = { name: form.name, username: form.username, role: form.role };
       if (form.password) body.password = form.password;
       if (form.pinCode) body.pinCode = form.pinCode;
       await $fetch(`/api/users/${editing.value.id}`, { method: "PATCH", body });
     } else {
-      const body: any = { name: form.name, email: form.email, password: form.password, role: form.role };
-      if (form.pinCode) body.pinCode = form.pinCode;
+      const body: any = {
+        name: form.name,
+        email: form.email,
+        username: form.username,
+        password: form.password,
+        pinCode: form.pinCode,
+        role: form.role,
+      };
       await $fetch("/api/users", {
         method: "POST",
         body,
@@ -112,8 +120,13 @@ const columns = [
     render: (name: string, type: string) => (type === "display" ? escapeHtml(name) : name),
   },
   {
-    data: "email",
+    data: "username",
     className: "max-md:hidden",
+    render: (username: string, type: string) => (type === "display" ? escapeHtml(username) : username),
+  },
+  {
+    data: "email",
+    className: "max-lg:hidden",
     render: (email: string, type: string) => (type === "display" ? escapeHtml(email) : email),
   },
   {
@@ -181,7 +194,8 @@ const tableOptions = {
               <thead>
                 <tr>
                   <th class="!border-border !font-medium">Nom</th>
-                  <th class="!border-border !font-medium max-md:hidden">Email</th>
+                  <th class="!border-border !font-medium max-md:hidden">Identifiant</th>
+                  <th class="!border-border !font-medium max-lg:hidden">Email</th>
                   <th class="!border-border !font-medium">Rôle</th>
                   <th class="!border-border !font-medium">Statut</th>
                   <th class="!border-border !font-medium text-end">Actions</th>
@@ -201,13 +215,17 @@ const tableOptions = {
         <label class="mb-1">Nom</label>
         <input v-model="form.name" type="text" class="mb-3 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary" />
 
+        <label class="mb-1">Identifiant</label>
+        <input v-model="form.username" type="text" class="mb-3 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary" />
+        <p class="-mt-2 mb-3 text-2xs text-body">Utilisé avec le code PIN pour se connecter (page de connexion).</p>
+
         <label class="mb-1">Email</label>
         <input v-model="form.email" type="email" :disabled="!!editing" class="mb-3 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary disabled:opacity-60" />
 
         <label class="mb-1">{{ editing ? "Nouveau mot de passe (optionnel)" : "Mot de passe" }}</label>
         <input v-model="form.password" type="password" class="mb-3 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary" />
 
-        <label class="mb-1">{{ editing ? "Code PIN (4 chiffres, optionnel)" : "Code PIN (4 chiffres, optionnel)" }}</label>
+        <label class="mb-1">{{ editing ? "Code PIN (4 chiffres, optionnel)" : "Code PIN (4 chiffres)" }}</label>
         <input
           v-model="form.pinCode"
           type="text"
@@ -219,7 +237,7 @@ const tableOptions = {
           @input="form.pinCode = form.pinCode.replace(/\D/g, '').slice(0, 4)"
         />
         <p v-if="form.pinCode && !pinCodeValid" class="mb-3 text-2xs text-danger">Le code PIN doit contenir exactement 4 chiffres.</p>
-        <p v-else class="mb-3 text-2xs text-body">Utilisé pour le déverrouillage rapide de session (écran de verrouillage).</p>
+        <p v-else class="mb-3 text-2xs text-body">Utilisé avec l'identifiant pour se connecter, et pour le déverrouillage rapide de session.</p>
 
         <label class="mb-1">Rôle</label>
         <select v-model="form.role" class="mb-5 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary">
@@ -231,7 +249,18 @@ const tableOptions = {
 
         <div class="flex gap-2">
           <button type="button" class="btn flex-1 border border-border" @click="showForm = false">Annuler</button>
-          <button type="button" class="btn flex-1 bg-primary text-white" :disabled="saving || !form.name || !pinCodeValid || (!editing && (!form.email || !form.password))" @click="save">
+          <button
+            type="button"
+            class="btn flex-1 bg-primary text-white"
+            :disabled="
+              saving ||
+              !form.name ||
+              !form.username ||
+              !pinCodeValid ||
+              (!editing && (!form.email || !form.password || !form.pinCode))
+            "
+            @click="save"
+          >
             Enregistrer
           </button>
         </div>

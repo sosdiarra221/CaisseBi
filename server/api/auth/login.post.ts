@@ -1,23 +1,38 @@
 import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
+import { checkPinLockout, recordPinFailure, recordPinSuccess } from "~/server/utils/pinRateLimit";
 
 const bodySchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
+  username: z.string().min(1),
+  pin: z.string().regex(/^\d{4}$/),
 });
 
 export default defineEventHandler(async (event) => {
-  const { email, password } = await readValidatedBody(event, bodySchema.parse);
+  const { username, pin } = await readValidatedBody(event, bodySchema.parse);
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { username } });
   if (!user || !user.active) {
     throw createError({ statusCode: 401, statusMessage: "Identifiants invalides" });
   }
 
-  const valid = await verifyPassword(user.password, password);
-  if (!valid) {
+  const lockout = checkPinLockout(user.id);
+  if (lockout.locked) {
+    throw createError({
+      statusCode: 429,
+      statusMessage: `Trop de tentatives. Réessayez dans ${lockout.retryAfterSeconds}s.`,
+    });
+  }
+
+  if (!user.pinCode) {
     throw createError({ statusCode: 401, statusMessage: "Identifiants invalides" });
   }
+
+  const valid = await verifyPassword(user.pinCode, pin);
+  if (!valid) {
+    recordPinFailure(user.id);
+    throw createError({ statusCode: 401, statusMessage: "Identifiants invalides" });
+  }
+  recordPinSuccess(user.id);
 
   await setUserSession(event, {
     user: {

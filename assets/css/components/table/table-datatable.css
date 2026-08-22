@@ -55,6 +55,18 @@ th.dt-ordering-desc .dt-column-order:after {
     margin-top: 1.25rem;
     margin-bottom: 0;
 }
+/* The row wrapping the <table> itself (.dt-layout-table) becomes a flex
+   container too via the rule above, which otherwise shrinks its cell (and
+   so the table) down to its content's natural width instead of filling the
+   available space — invisible on tables with enough content to fill the
+   row anyway (e.g. /stock), glaring on narrower ones (e.g. /produits). */
+.dt-container .dt-layout-cell.dt-layout-full {
+    width: 100%;
+}
+.dt-container .dt-layout-cell.dt-layout-full table.dataTable {
+    width: 100% !important;
+}
+
 .dt-container .dt-layout-cell.dt-layout-end {
     margin-left: auto;
 }

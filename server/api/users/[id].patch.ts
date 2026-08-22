@@ -4,6 +4,7 @@ import { requireRole } from "~/server/utils/authz";
 
 const bodySchema = z.object({
   name: z.string().min(1).optional(),
+  username: z.string().min(1).optional(),
   role: z.enum(["OWNER", "MANAGER", "GERANT", "CASHIER"]).optional(),
   active: z.boolean().optional(),
   password: z.string().min(6).optional(),
@@ -18,6 +19,11 @@ export default defineEventHandler(async (event) => {
   const target = await prisma.user.findFirst({ where: { id, companyId: user.companyId } });
   if (!target) throw createError({ statusCode: 404, statusMessage: "Utilisateur introuvable" });
 
+  if (data.username) {
+    const existingUsername = await prisma.user.findFirst({ where: { username: data.username, NOT: { id } } });
+    if (existingUsername) throw createError({ statusCode: 400, statusMessage: "Cet identifiant est déjà utilisé" });
+  }
+
   const { password, pinCode, ...rest } = data;
 
   return prisma.user.update({
@@ -27,6 +33,6 @@ export default defineEventHandler(async (event) => {
       password: password ? await hashPassword(password) : undefined,
       pinCode: pinCode ? await hashPassword(pinCode) : undefined,
     },
-    select: { id: true, name: true, email: true, role: true, active: true, createdAt: true },
+    select: { id: true, name: true, email: true, username: true, role: true, active: true, createdAt: true },
   });
 });

@@ -274,8 +274,8 @@ const categories: Category[] = [
         roles: "Propriétaire, Manager",
         steps: [
           "Aller dans Gestion > Utilisateurs puis « + Ajouter ».",
-          "Renseigner le nom, l'email et le mot de passe.",
-          "Un code PIN à 4 chiffres est optionnel : il permet le déverrouillage rapide de l'écran de verrouillage sans retaper le mot de passe.",
+          "Renseigner le nom, l'identifiant, l'email et le mot de passe.",
+          "Le code PIN à 4 chiffres est obligatoire : avec l'identifiant, c'est ce qui sert à se connecter (et aussi à déverrouiller rapidement l'écran de verrouillage).",
           "Choisir le rôle : Propriétaire, Manager ou Caissier, puis « Enregistrer ».",
         ],
       },
@@ -349,7 +349,7 @@ const categories: Category[] = [
         title: "Se connecter",
         roles: "Tous les rôles",
         steps: [
-          "Ouvrir la page de connexion, saisir l'email et le mot de passe du compte, puis « Se connecter ».",
+          "Ouvrir la page de connexion, saisir l'identifiant et le code PIN à 4 chiffres du compte, puis « Se connecter ».",
           "Un compte Caissier est automatiquement dirigé vers le POS ; les autres rôles arrivent sur le tableau de bord.",
         ],
       },
