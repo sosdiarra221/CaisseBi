@@ -1,9 +1,5 @@
 <script lang="ts" setup>
-import DataTable from "datatables.net-vue3";
-import DataTablesCore from "datatables.net";
 import { formatAmount, formatDateTime } from "~/lib/format";
-
-DataTable.use(DataTablesCore);
 
 definePageMeta({ layout: "home" });
 
@@ -297,9 +293,8 @@ const tableOptions = {
           </div>
 
           <div class="overflow-x-auto">
-            <DataTable
+            <AppDataTable
               id="salesTable"
-              class="display table !mb-6 text-left"
               :data="sales ?? []"
               :columns="columns"
               :options="tableOptions"
@@ -315,7 +310,7 @@ const tableOptions = {
                   <th class="!border-border !font-medium text-end">Actions</th>
                 </tr>
               </thead>
-            </DataTable>
+            </AppDataTable>
           </div>
         </div>
       </div>

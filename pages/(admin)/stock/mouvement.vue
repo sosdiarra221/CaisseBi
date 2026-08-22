@@ -1,10 +1,6 @@
 <script lang="ts" setup>
-import DataTable from "datatables.net-vue3";
-import DataTablesCore from "datatables.net";
 import Multiselect from "vue-multiselect";
 import { formatDateTime } from "~/lib/format";
-
-DataTable.use(DataTablesCore);
 
 definePageMeta({ layout: "home" });
 
@@ -207,9 +203,8 @@ const tableOptions = {
           </div>
 
           <div class="overflow-x-auto">
-            <DataTable
+            <AppDataTable
               id="movementsTable"
-              class="display table !mb-6 text-left"
               :data="movements ?? []"
               :columns="columns"
               :options="tableOptions"
@@ -225,7 +220,7 @@ const tableOptions = {
                   <th class="!border-border !font-medium max-md:hidden">Utilisateur</th>
                 </tr>
               </thead>
-            </DataTable>
+            </AppDataTable>
           </div>
         </div>
       </div>
