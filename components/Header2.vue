@@ -92,6 +92,11 @@ async function logout() {
              never actually be "on the left" of the page, only of its own,
              already-shifted content area. -->
         <div class="flex shrink-0 items-center gap-3">
+          <img
+            src="~/assets/images/logo-grace-dor.png"
+            alt="La Grâce d'Or"
+            class="hidden h-11 w-auto max-w-[11rem] object-contain sm:block"
+          />
           <button
             type="button"
             class="flex size-10 shrink-0 items-center justify-center rounded-xl text-lg hover:bg-black/5"
@@ -101,11 +106,6 @@ async function logout() {
           >
             <i class="fa fa-bars"></i>
           </button>
-          <img
-            src="~/assets/images/logo-grace-dor.png"
-            alt="La Grâce d'Or"
-            class="hidden h-11 w-auto max-w-[11rem] object-contain sm:block"
-          />
         </div>
 
         <!-- Search -->

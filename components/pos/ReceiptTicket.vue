@@ -105,7 +105,7 @@ useHead(() => ({
   >
     <!-- Logo -->
     <div class="px-4 pb-1 pt-4 text-center">
-      <img src="assets/images/logo-grace-dor.png" alt="La Grâce d'Or" class="mx-auto" style="max-width: 85%" />
+      <img src="assets/images/logo-grace-dor.png" alt="La Grâce d'Or" class="mx-auto" style="max-width: 60%" />
     </div>
 
     <!-- Banner -->
