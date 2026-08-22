@@ -1,6 +1,29 @@
 <script lang="ts" setup>
+import DataTable from "datatables.net-vue3";
+import DataTablesCore from "datatables.net";
 import { formatAmount, formatDateTime } from "~/lib/format";
+
+DataTable.use(DataTablesCore);
+
 definePageMeta({ layout: "home" });
+
+const DT_LANGUAGE = {
+  search: "",
+  searchPlaceholder: "Rechercher...",
+  lengthMenu: "Afficher _MENU_ ventes",
+  info: "Affichage de _START_ à _END_ sur _TOTAL_ ventes",
+  infoEmpty: "Aucune vente",
+  infoFiltered: "(filtré depuis _MAX_ ventes)",
+  zeroRecords: "Aucune vente ne correspond à la recherche",
+  emptyTable: "Aucune vente.",
+  paginate: { previous: "Précédent", next: "Suivant" },
+};
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string
+  );
+}
 
 const { user } = useUserSession();
 const { data: company } = await useFetch("/api/company");
@@ -107,6 +130,74 @@ async function cancelSale(sale: any) {
     toast.error(e?.data?.statusMessage || "Erreur");
   }
 }
+
+const columns = [
+  {
+    data: "createdAt",
+    render: (value: string, type: string) => {
+      const d = new Date(value);
+      return type === "display" ? escapeHtml(formatDateTime(d)) : d.getTime();
+    },
+  },
+  {
+    data: "number",
+    render: (value: number, type: string) => {
+      const label = `#${String(value).padStart(6, "0")}`;
+      return type === "display" ? escapeHtml(label) : value;
+    },
+  },
+  {
+    data: "user.name",
+    className: "max-md:hidden",
+    render: (value: string, type: string) => (type === "display" ? escapeHtml(value ?? "—") : (value ?? "")),
+  },
+  {
+    data: "payments",
+    orderable: false,
+    render: (payments: any[], type: string) => {
+      if (type !== "display") return "";
+      return `<div class="flex flex-wrap gap-1">${(payments ?? [])
+        .map((p) => `<span class="rounded-full bg-primarylight px-2.5 py-1 text-2xs font-semibold text-primary">${escapeHtml(methodLabels[p.method] ?? p.method)}</span>`)
+        .join("")}</div>`;
+    },
+  },
+  {
+    data: "total",
+    render: (value: string, type: string) => (type === "display" ? escapeHtml(`${formatAmount(value)} ${company.value?.currency ?? ""}`) : Number(value)),
+  },
+  {
+    data: "status",
+    render: (value: string, type: string) => {
+      if (type !== "display") return value;
+      const cls = value === "CANCELLED" ? "bg-dangerlight text-danger" : "bg-successlight text-success";
+      const label = value === "CANCELLED" ? "Annulée" : "Validée";
+      return `<span class="rounded-full px-2.5 py-1 text-2xs font-semibold ${cls}">${label}</span>`;
+    },
+  },
+  {
+    data: null,
+    orderable: false,
+    searchable: false,
+    className: "text-end",
+    render: (_d: any, type: string, row: any) => {
+      if (type !== "display") return "";
+      const canCancel = user.value?.role !== "CASHIER" && row.status === "COMPLETED";
+      return `<div class="flex justify-end gap-1.5">
+        <button type="button" class="js-view row-action-btn text-primary hover:bg-primarylight" title="Voir le ticket"><i class="fa fa-eye"></i></button>
+        ${canCancel ? `<button type="button" class="js-cancel row-action-btn text-danger hover:bg-dangerlight" title="Annuler la vente"><i class="fa fa-ban"></i></button>` : ""}
+      </div>`;
+    },
+  },
+];
+
+const tableOptions = {
+  order: [[0, "desc"]] as any,
+  language: DT_LANGUAGE,
+  createdRow: (row: HTMLElement, data: any) => {
+    row.querySelector(".js-view")?.addEventListener("click", () => (viewingSaleId.value = data.id));
+    row.querySelector(".js-cancel")?.addEventListener("click", () => cancelSale(data));
+  },
+};
 </script>
 
 <template>
@@ -185,71 +276,25 @@ async function cancelSale(sale: any) {
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left">
+            <DataTable
+              id="salesTable"
+              class="display table !mb-6 text-left"
+              :data="sales ?? []"
+              :columns="columns"
+              :options="tableOptions"
+            >
               <thead>
-                <tr class="border-b border-border">
-                  <th class="pb-3 font-medium">Date</th>
-                  <th class="pb-3 font-medium">N° vente</th>
-                  <th class="pb-3 font-medium max-md:hidden">Caissier</th>
-                  <th class="pb-3 font-medium">Paiement</th>
-                  <th class="pb-3 font-medium">Total</th>
-                  <th class="pb-3 font-medium">Statut</th>
-                  <th class="pb-3 font-medium text-end">Actions</th>
+                <tr>
+                  <th class="!border-border !font-medium">Date</th>
+                  <th class="!border-border !font-medium">N° vente</th>
+                  <th class="!border-border !font-medium max-md:hidden">Caissier</th>
+                  <th class="!border-border !font-medium">Paiement</th>
+                  <th class="!border-border !font-medium">Total</th>
+                  <th class="!border-border !font-medium">Statut</th>
+                  <th class="!border-border !font-medium text-end">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  v-for="s in sales"
-                  :key="s.id"
-                  class="border-b border-border duration-150 hover:bg-bodybg"
-                >
-                  <td class="py-3.5">{{ formatDateTime(s.createdAt) }}</td>
-                  <td class="py-3.5">#{{ String(s.number).padStart(6, "0") }}</td>
-                  <td class="py-3.5 max-md:hidden">{{ s.user.name }}</td>
-                  <td class="py-3.5">
-                    <div class="flex flex-wrap gap-1">
-                      <span
-                        v-for="(p, i) in s.payments"
-                        :key="i"
-                        class="rounded-full bg-primarylight px-2.5 py-1 text-2xs font-semibold text-primary"
-                      >
-                        {{ methodLabels[p.method] ?? p.method }}
-                      </span>
-                    </div>
-                  </td>
-                  <td class="py-3.5 font-semibold">{{ formatAmount(s.total) }} {{ company?.currency }}</td>
-                  <td class="py-3.5">
-                    <span
-                      class="rounded-full px-2.5 py-1 text-2xs font-semibold"
-                      :class="s.status === 'CANCELLED' ? 'bg-dangerlight text-danger' : 'bg-successlight text-success'"
-                    >
-                      {{ s.status === "CANCELLED" ? "Annulée" : "Validée" }}
-                    </span>
-                  </td>
-                  <td class="py-3.5 text-end">
-                    <button
-                      type="button"
-                      class="text-primary mr-3"
-                      title="Voir le ticket"
-                      @click="viewingSaleId = s.id"
-                    >
-                      <i class="fa fa-eye mr-1"></i>Voir
-                    </button>
-                    <button
-                      v-if="user?.role !== 'CASHIER' && s.status === 'COMPLETED'"
-                      type="button"
-                      class="text-danger"
-                      @click="cancelSale(s)"
-                    >
-                      Annuler
-                    </button>
-                  </td>
-                </tr>
-                <tr v-if="!sales?.length">
-                  <td colspan="7" class="py-6 text-center text-body">Aucune vente.</td>
-                </tr>
-              </tbody>
-            </table>
+            </DataTable>
           </div>
         </div>
       </div>

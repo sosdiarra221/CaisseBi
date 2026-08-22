@@ -33,17 +33,10 @@ watch(selectedId, () => refresh());
 
 // Manual formatting throughout, same rationale as pages/(admin)/rapports/index.vue:
 // avoids Node-vs-browser ICU differences (Number.toLocaleString) causing
-// SSR/CSR hydration mismatches. Short dates use the shared formatDate() from
-// lib/format.ts; formatLongDate/formatTime aren't covered there so stay local.
-const MONTHS_FR = [
-  "janvier", "février", "mars", "avril", "mai", "juin",
-  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
-];
+// SSR/CSR hydration mismatches. Dates use the shared formatDate() from
+// lib/format.ts; only time-of-day isn't covered there, so stays local.
 function pad2(n: number) {
   return String(n).padStart(2, "0");
-}
-function formatLongDate(d: Date) {
-  return `${d.getDate()} ${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
 }
 function formatTime(d: Date) {
   return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
@@ -303,7 +296,7 @@ function printJournal() {
         </div>
 
         <!-- Table -->
-        <div class="p-6 pt-4">
+        <div class="p-6 pt-4 overflow-x-auto">
           <table class="w-full text-sm" style="border-collapse: collapse">
             <thead>
               <tr :style="{ background: NAVY }" class="text-white">
@@ -350,7 +343,7 @@ function printJournal() {
         <!-- Footer: signatures -->
         <div class="px-6 pb-6">
           <p class="mb-4 text-sm text-body">
-            Fait{{ companyCity ? ` à ${companyCity}` : "" }}, le {{ formatLongDate(closedAtDate ?? new Date()) }}
+            Fait{{ companyCity ? ` à ${companyCity}` : "" }}, le {{ formatDate(closedAtDate ?? new Date()) }}
           </p>
           <div class="grid grid-cols-2 gap-8">
             <div>

@@ -1,5 +1,28 @@
 <script lang="ts" setup>
+import DataTable from "datatables.net-vue3";
+import DataTablesCore from "datatables.net";
+
+DataTable.use(DataTablesCore);
+
 definePageMeta({ layout: "home" });
+
+const DT_LANGUAGE = {
+  search: "",
+  searchPlaceholder: "Rechercher...",
+  lengthMenu: "Afficher _MENU_ utilisateurs",
+  info: "Affichage de _START_ à _END_ sur _TOTAL_ utilisateurs",
+  infoEmpty: "Aucun utilisateur",
+  infoFiltered: "(filtré depuis _MAX_ utilisateurs)",
+  zeroRecords: "Aucun utilisateur ne correspond à la recherche",
+  emptyTable: "Aucun utilisateur.",
+  paginate: { previous: "Précédent", next: "Suivant" },
+};
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string
+  );
+}
 
 const { user } = useUserSession();
 const { data: users, refresh } = await useFetch("/api/users");
@@ -79,6 +102,60 @@ async function toggleActive(u: any) {
   toast.success(u.active ? "Utilisateur désactivé." : "Utilisateur réactivé.");
   await refresh();
 }
+
+const ROLE_LABELS: Record<string, string> = {
+  OWNER: "Propriétaire",
+  MANAGER: "Manager",
+  GERANT: "Gérant",
+  CASHIER: "Caissier",
+};
+
+const columns = [
+  {
+    data: "name",
+    render: (name: string, type: string) => (type === "display" ? escapeHtml(name) : name),
+  },
+  {
+    data: "email",
+    className: "max-md:hidden",
+    render: (email: string, type: string) => (type === "display" ? escapeHtml(email) : email),
+  },
+  {
+    data: "role",
+    render: (role: string, type: string) => (type === "display" ? escapeHtml(ROLE_LABELS[role] ?? role) : role),
+  },
+  {
+    data: "active",
+    render: (active: boolean, type: string) => {
+      if (type !== "display") return active ? 1 : 0;
+      return active ? '<span class="text-success">Actif</span>' : '<span class="text-danger">Désactivé</span>';
+    },
+  },
+  {
+    data: null,
+    orderable: false,
+    searchable: false,
+    className: "text-end",
+    render: (_d: any, type: string, row: any) => {
+      if (type !== "display") return "";
+      const toggleIcon = row.active ? "fa-ban" : "fa-rotate-left";
+      const toggleTitle = row.active ? "Désactiver" : "Réactiver";
+      return `<div class="flex justify-end gap-1.5">
+        <button type="button" class="js-edit row-action-btn text-primary hover:bg-primarylight" title="Modifier"><i class="fa fa-pen"></i></button>
+        <button type="button" class="js-toggle row-action-btn text-danger hover:bg-dangerlight" title="${toggleTitle}"><i class="fa ${toggleIcon}"></i></button>
+      </div>`;
+    },
+  },
+];
+
+const tableOptions = {
+  order: [[0, "asc"]] as any,
+  language: DT_LANGUAGE,
+  createdRow: (row: HTMLElement, data: any) => {
+    row.querySelector(".js-edit")?.addEventListener("click", () => openEdit(data));
+    row.querySelector(".js-toggle")?.addEventListener("click", () => toggleActive(data));
+  },
+};
 </script>
 
 <template>
@@ -95,37 +172,26 @@ async function toggleActive(u: any) {
             <button type="button" class="btn bg-primary text-white btn-sm" @click="openCreate">+ Ajouter</button>
           </div>
         </div>
-        <div class="p-5 overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-border">
-                <th class="pb-3 font-medium">Nom</th>
-                <th class="pb-3 font-medium">Email</th>
-                <th class="pb-3 font-medium">Rôle</th>
-                <th class="pb-3 font-medium">Statut</th>
-                <th class="pb-3 font-medium text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="u in users" :key="u.id" class="border-b border-border">
-                <td class="py-3">{{ u.name }}</td>
-                <td class="py-3">{{ u.email }}</td>
-                <td class="py-3">{{ u.role }}</td>
-                <td class="py-3">
-                  <span :class="u.active ? 'text-success' : 'text-danger'">{{ u.active ? "Actif" : "Désactivé" }}</span>
-                </td>
-                <td class="py-3 text-end">
-                  <button type="button" class="text-primary mr-3" @click="openEdit(u)">Modifier</button>
-                  <button type="button" class="text-danger" @click="toggleActive(u)">
-                    {{ u.active ? "Désactiver" : "Réactiver" }}
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="!users?.length">
-                <td colspan="5" class="py-6 text-center text-body">Aucun utilisateur.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="p-5">
+          <div class="overflow-x-auto">
+            <DataTable
+              id="usersTable"
+              class="display table !mb-6 text-left"
+              :data="users ?? []"
+              :columns="columns"
+              :options="tableOptions"
+            >
+              <thead>
+                <tr>
+                  <th class="!border-border !font-medium">Nom</th>
+                  <th class="!border-border !font-medium max-md:hidden">Email</th>
+                  <th class="!border-border !font-medium">Rôle</th>
+                  <th class="!border-border !font-medium">Statut</th>
+                  <th class="!border-border !font-medium text-end">Actions</th>
+                </tr>
+              </thead>
+            </DataTable>
+          </div>
         </div>
       </div>
     </div>

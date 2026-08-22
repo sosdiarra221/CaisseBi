@@ -173,7 +173,8 @@ const columns = [
     orderable: false,
     searchable: false,
     className: "text-right",
-    render: () => `<button type="button" class="js-delete text-danger">Supprimer</button>`,
+    render: () =>
+      `<div class="flex justify-end"><button type="button" class="js-delete row-action-btn text-danger hover:bg-dangerlight" title="Supprimer"><i class="fa fa-trash"></i></button></div>`,
   },
 ];
 

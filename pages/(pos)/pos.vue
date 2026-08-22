@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { formatDate, WEEKDAYS_FR } from "~/lib/format";
+
 definePageMeta({ layout: "pos" });
 
 const { user, clear: clearSession } = useUserSession();
@@ -32,9 +34,7 @@ onMounted(() => {
 });
 onUnmounted(() => clockTimer && clearInterval(clockTimer));
 
-const dateLabel = computed(() =>
-  now.value.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "long", year: "numeric" })
-);
+const dateLabel = computed(() => `${WEEKDAYS_FR[now.value.getDay()]} ${formatDate(now.value)}`);
 const timeLabel = computed(() => now.value.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }));
 
 const filteredProducts = computed(() => {

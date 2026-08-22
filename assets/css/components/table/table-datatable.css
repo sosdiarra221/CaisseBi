@@ -3,148 +3,68 @@
     padding: 0.9375rem 0.625rem;
     white-space: nowrap;
 }
-table.dataTable thead th {
-    background-size: 12px;
-}
-table.dataTable thead .sorting_desc:after,
-table.dataTable thead .sorting_asc:after {
-    display: none;
-}
-.active-projects .dataTables_info {
-    padding-left: 20px;
-    font-size: 12px;
-    color: #888888;
-}
 table.dataTable.no-footer {
-    border-bottom:  none;
+    border-bottom: none;
 }
-table.dataTable thead .sorting:after, table.dataTable thead .sorting_desc:after{
+
+/*
+ * The installed datatables.net core is v2.x, which renamed every CSS class
+ * (dataTables_wrapper -> dt-container, paginate_button -> dt-paging-button,
+ * etc.) from the older v1.x scheme. There is no bundled default stylesheet
+ * for this version in this project, so every rule below targets the actual
+ * v2 markup directly — verified against the rendered DOM, not assumed from
+ * older DataTables docs/examples.
+ */
+
+/* Sort indicator: DT2 renders an empty <span class="dt-column-order"> next
+   to sortable header titles and toggles dt-ordering-asc/desc on the <th>. */
+th.dt-orderable-asc .dt-column-order,
+th.dt-orderable-desc .dt-column-order {
+    position: relative;
+    margin-left: 10px;
+}
+th.dt-orderable-asc .dt-column-order:after,
+th.dt-orderable-desc .dt-column-order:after {
     content: "\f0dc";
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
-    background-image: none;
-    margin-left: 10px;
     font-size: calc(100% - 4px);
-    opacity: 0.5;
+    opacity: 0.4;
 }
-table.dataTable thead .sorting_asc:after {
+th.dt-ordering-asc .dt-column-order:after {
     content: "\f0de";
     opacity: 1;
 }
-table.dataTable thead .sorting_desc:after {
+th.dt-ordering-desc .dt-column-order:after {
     content: "\f0dd";
     opacity: 1;
 }
-table.dataTable thead .style-1.sorting_asc:after, table.dataTable thead .style-1.sorting_desc:after,table.dataTable thead .style-1.sorting:after {
-    display: none;
-}
-.paging_simple_numbers.dataTables_paginate {
-    padding: 0.6125rem 0.3125rem !important;
-}
-.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+
+.dt-container {
     color: #888888;
-    border-radius: 1rem;
-    padding: 0.125rem 0;
+}
+.dt-container .dt-layout-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 1.25rem;
 }
-.dataTables_wrapper .dataTables_paginate {
-    align-items: center;
-    display: flex;
-    flex-flow: wrap;
-    float: right;
-    text-align: right;
+.dt-container .dt-layout-row:has(.dt-paging),
+.dt-container .dt-layout-row:has(.dt-info) {
+    margin-top: 1.25rem;
+    margin-bottom: 0;
 }
-.dataTables_wrapper .dataTables_paginate .paginate_button.previous, .dataTables_wrapper .dataTables_paginate .paginate_button.next {
-    font-size: 13px;
-    height: 24px;
-    width: 24px;
-    background: transparent;
-    border-radius: 0.375rem;
-    padding: 0 0.45rem;
-    line-height: 25px;
-    margin: 0 0.225rem;
-    display: inline-block;
-    color: var(--primary) !important;
-    box-shadow: none !important;
+.dt-container .dt-layout-cell.dt-layout-end {
+    margin-left: auto;
 }
-.dataTables_wrapper .dataTables_paginate .paginate_button.previous.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.next.disabled {
-    color: var(--primary) !important;
-}
-.dataTables_wrapper .dataTables_paginate span .paginate_button.current {
-    color: #fff !important;
-    background: var(--primary) !important;
-}
-.dataTables_wrapper .dataTables_paginate span .paginate_button {
-    height: 24px;
-    width: 24px;
-    padding: 0;
-    margin-left: 0rem;
-    margin: 0 0.125rem;
-    line-height: 25px;
-    text-align: center;
-    font-size: 13px;
-    border-radius: 0.375rem;
-    border: 0 !important;
-    color: var(--primary) !important;
-    cursor: pointer;
-    box-shadow: none !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    box-sizing: border-box;
-    display: inline-block;
-    min-width: 1.5em;
-    padding: 0.5em 1em;
-    margin-left: 2px;
-    text-align: center;
-    text-decoration: none !important;
-    cursor: pointer;
-    color: #333 !important;
-    border: 1px solid transparent;
-    border-radius: 2px;
-}
-.dataTables_wrapper .dataTables_paginate span .paginate_button:hover, .dataTables_wrapper .dataTables_paginate span .paginate_button:active,.paginate_button:hover {
-    color: var(--primary) !important;
-    background: var(--rgba-primary-1) !important;
-    border-color: transparent !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-    border-color: transparent !important;
-}
-.dataTables_wrapper .dataTables_paginate span .paginate_button.current:hover {
-    color: #fff !important;
-    background: var(--primary) !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button.previous.disabled,.dataTables_wrapper .dataTables_paginate .paginate_button.next.next:hover {
-    color: var(--primary) !important;
-    border-color: transparent;
-}
-table.dataTable thead .sorting{
-    background-image: none !important;
-}
-.dt-filter .dataTables_filter {
-    float: left;
-}
-.dt-buttons {
-    display: none;
-}
-.dt-filter .dataTables_filter label {
-    background: #eeee;
-    padding: 0 8px;
-    margin: 1px 17px;
-    border-radius: 0.25rem;
+.dt-container .dt-length label,
+.dt-container .dt-search label {
     display: flex;
     align-items: center;
-    margin-bottom: 6px;
-    margin-right: 0;
-    padding-right: 0;
+    gap: 0.5rem;
 }
-.dt-filter .dataTables_filter input[type="search"] {
-    border: 0;
-    border: 0;
-    background: #eeee;
-    outline: none;
-}
-.dataTables_wrapper input[type="search"], .dataTables_wrapper input[type="text"], .dataTables_wrapper select {
+.dt-container .dt-input {
     border: 1px solid var(--border);
     padding: .3rem 0.5rem;
     height: 2.5rem;
@@ -152,50 +72,118 @@ table.dataTable thead .sorting{
     border-radius: 0.5rem;
     background-color: var(--d-bg);
 }
-.dataTables_scroll {
-    padding: 1rem 0;
-}
-.dataTables_wrapper .dataTables_filter input {
-    margin-left: 0.5em;
+.dt-container .dt-info {
+    font-size: 14px;
 }
 
-.dataTables_scrollBody thead {
-    display: none;
+/* Pagination */
+.dt-paging nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
 }
-.dataTables_scrollFoot {
-    padding-top: 1rem;
+.dt-paging-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 24px;
+    min-width: 24px;
+    padding: 0 0.45rem;
+    margin: 0 0.125rem;
+    border-radius: 0.375rem;
+    border: 0 !important;
+    font-size: 13px;
+    color: var(--primary) !important;
+    background: transparent;
+    cursor: pointer;
+    box-shadow: none !important;
 }
-#example2_wrapper .dataTables_scrollBody {
-    max-height: 33.25rem !important;
+.dt-paging-button:hover {
+    color: var(--primary) !important;
+    background: var(--rgba-primary-1) !important;
 }
-.dataTables_scrollBody::-webkit-scrollbar-track, 
+.dt-paging-button.current,
+.dt-paging-button.current:hover {
+    color: #fff !important;
+    background: var(--primary) !important;
+}
+.dt-paging-button.disabled,
+.dt-paging-button.disabled:hover {
+    opacity: 0.4;
+    background: transparent !important;
+    cursor: default;
+    pointer-events: none;
+}
+
+.dt-scroll-body {
+    overflow-y: hidden;
+}
+.dt-scroll-body::-webkit-scrollbar-track,
 table::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.5);
     -webkit-border-radius: 10px;
     border-radius: 10px;
 }
-.dataTables_scrollBody::-webkit-scrollbar{
+.dt-scroll-body::-webkit-scrollbar {
     width: 8px;
     height: 7px;
 }
 table::-webkit-scrollbar {
     height: 2px;
 }
-.dataTables_scrollBody::-webkit-scrollbar-thumb,
-    table::-webkit-scrollbar-thumb {
+.dt-scroll-body::-webkit-scrollbar-thumb,
+table::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    background: var(--primary); 
+    background: var(--primary);
 }
-.dataTables_info {
-    font-size: 14px;
-}
+
 @media (max-width: 991.98px) {
-    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
-      text-align: left;
+    .dt-container .dt-length,
+    .dt-container .dt-search {
+        text-align: left;
     }
-} 
+}
+
 [data-theme-version="dark"] table.dataTable tbody tr,
 [data-theme-version="dark"] table.dataTable tbody td {
     border-color: var(--border);
+}
+
+/* Row action buttons (edit/delete/toggle icons in table rows) — one
+   consistent, professional-looking control instead of bare text links.
+   40px is a real tap target for PWA/mobile use, not just a desktop hover
+   affordance. */
+.row-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    transition: background-color 0.15s ease;
+}
+
+/* DataTables' default pagination controls are 24px — too small to reliably
+   tap on a phone. Bump them up specifically on narrow/touch viewports
+   without changing the denser desktop look. */
+@media (max-width: 640px) {
+    .dt-paging-button {
+        height: 2.25rem;
+        min-width: 2.25rem;
+        font-size: 0.9rem;
+        margin: 0.15rem;
+    }
+    .dt-container .dt-layout-row {
+        justify-content: center;
+    }
+    .dt-length,
+    .dt-search {
+        width: 100%;
+    }
+    .dt-search .dt-input {
+        flex: 1;
+    }
 }

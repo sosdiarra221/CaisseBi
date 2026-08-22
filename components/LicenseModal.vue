@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { formatDate } from "~/lib/format";
+
 defineProps<{ show: boolean }>();
 const emit = defineEmits<{ close: [] }>();
 
@@ -10,19 +12,6 @@ const toast = useToast();
 const { data: license, refresh: refreshLicense, pending } = useLicenseStatus();
 
 const isOwner = computed(() => user.value?.role === "OWNER");
-
-// Manual date formatting (no Intl/toLocaleString) — same reasoning as
-// pages/(admin)/rapports/index.vue: Node's ICU data and the browser's can
-// pick different output for the same "fr-FR" locale, which trips a
-// hydration mismatch. Building the string by hand keeps it identical.
-const MONTHS_FR = [
-  "janvier", "février", "mars", "avril", "mai", "juin",
-  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
-];
-function formatDate(value: string | Date) {
-  const d = typeof value === "string" ? new Date(value) : value;
-  return `${d.getDate()} ${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
-}
 
 // --- Generate ---------------------------------------------------------
 const generating = ref(false);

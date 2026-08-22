@@ -49,30 +49,32 @@ const filtered = computed(() => {
               Faible
             </button>
           </div>
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-border">
-                <th class="pb-3 font-medium">Produit</th>
-                <th class="pb-3 font-medium">Stock</th>
-                <th class="pb-3 font-medium">Seuil</th>
-                <th class="pb-3 font-medium">État</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="p in filtered" :key="p.id" class="border-b border-border">
-                <td class="py-3">{{ p.label }}</td>
-                <td class="py-3">{{ p.quantity }}</td>
-                <td class="py-3">{{ p.alertThreshold }}</td>
-                <td class="py-3">
-                  <span v-if="p.quantity <= p.alertThreshold" class="text-danger font-semibold">⚠ Faible</span>
-                  <span v-else class="text-success">Normal</span>
-                </td>
-              </tr>
-              <tr v-if="!filtered.length">
-                <td colspan="4" class="py-6 text-center text-body">Aucun produit.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="pb-3 font-medium">Produit</th>
+                  <th class="pb-3 font-medium">Stock</th>
+                  <th class="pb-3 font-medium">Seuil</th>
+                  <th class="pb-3 font-medium">État</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="p in filtered" :key="p.id" class="border-b border-border">
+                  <td class="py-3">{{ p.label }}</td>
+                  <td class="py-3">{{ p.quantity }}</td>
+                  <td class="py-3">{{ p.alertThreshold }}</td>
+                  <td class="py-3">
+                    <span v-if="p.quantity <= p.alertThreshold" class="text-danger font-semibold">⚠ Faible</span>
+                    <span v-else class="text-success">Normal</span>
+                  </td>
+                </tr>
+                <tr v-if="!filtered.length">
+                  <td colspan="4" class="py-6 text-center text-body">Aucun produit.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

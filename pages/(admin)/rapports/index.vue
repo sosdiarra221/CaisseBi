@@ -20,32 +20,12 @@ async function applyFilter() {
   await refresh();
 }
 
-// Manual formatting everywhere below instead of Intl/toLocaleString: this
-// codebase hit real SSR/CSR hydration mismatches from Node's ICU data vs the
-// browser's picking different output for the same locale (see lib/format.ts).
-// Building the strings by hand keeps server- and client-rendered markup
-// byte-identical. Short dates use the shared formatDate() from lib/format.ts;
-// formatLongDate/formatTime aren't covered there so stay local.
-const MONTHS_FR = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "juillet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-];
-
+// Manual formatting instead of Intl/toLocaleString: this codebase hit real
+// SSR/CSR hydration mismatches from Node's ICU data vs the browser's picking
+// different output for the same locale (see lib/format.ts). Dates use the
+// shared formatDate(); only time-of-day isn't covered there, so stays local.
 function pad2(n: number) {
   return String(n).padStart(2, "0");
-}
-function formatLongDate(d: Date) {
-  return `${d.getDate()} ${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
 }
 function formatTime(d: Date) {
   return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
@@ -318,7 +298,7 @@ function printReport() {
 
         <div class="px-6 pb-6">
           <p class="mb-4 text-sm text-body">
-            Fait{{ companyCity ? ` à ${companyCity}` : "" }}, le {{ formatLongDate(reportDate) }}
+            Fait{{ companyCity ? ` à ${companyCity}` : "" }}, le {{ formatDate(reportDate) }}
           </p>
           <div class="grid grid-cols-2 gap-8">
             <div>

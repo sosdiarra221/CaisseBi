@@ -25,19 +25,6 @@ async function applyFilter() {
   await refresh();
 }
 
-// Same manual-formatting rationale as pages/(admin)/comptabilite/index.vue:
-// avoid Number.toLocaleString()/Intl date formatting so SSR (Node ICU) and
-// CSR (browser ICU) never disagree and cause hydration mismatches. Short
-// dates use the shared formatDate() from lib/format.ts; only the long
-// human-readable "Fait à ..., le ..." footer date is hand-rolled here.
-const MONTHS_FR = [
-  "janvier", "février", "mars", "avril", "mai", "juin",
-  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
-];
-function formatLongDate(d: Date) {
-  return `${d.getDate()} ${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
-}
-
 const fromDate = computed(() => new Date(`${from.value}T00:00:00`));
 const toDate = computed(() => new Date(`${to.value}T00:00:00`));
 const printedOnDate = computed(() => new Date());
@@ -263,7 +250,7 @@ function printReport() {
         <!-- Footer: signatures -->
         <div class="px-6 pb-6">
           <p class="mb-4 text-sm text-body">
-            Fait{{ companyCity ? ` à ${companyCity}` : "" }}, le {{ formatLongDate(printedOnDate) }}
+            Fait{{ companyCity ? ` à ${companyCity}` : "" }}, le {{ formatDate(printedOnDate) }}
           </p>
           <div class="grid grid-cols-2 gap-8">
             <div>

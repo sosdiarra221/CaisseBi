@@ -56,37 +56,39 @@ async function validate() {
             {{ errorMessage }}
           </p>
 
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-border">
-                <th class="pb-3 font-medium">Produit</th>
-                <th class="pb-3 font-medium">Théorique</th>
-                <th class="pb-3 font-medium">Réel</th>
-                <th class="pb-3 font-medium">Écart</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(line, i) in lines" :key="line.productId" class="border-b border-border">
-                <td class="py-3">{{ line.label }}</td>
-                <td class="py-3">{{ line.theoretical }}</td>
-                <td class="py-3">
-                  <input
-                    v-model.number="line.real"
-                    type="number"
-                    min="0"
-                    :disabled="done"
-                    class="h-9 w-24 rounded-lg border border-border bg-transparent px-2 focus:border-primary"
-                  />
-                </td>
-                <td class="py-3" :class="gaps[i] === 0 ? '' : gaps[i] > 0 ? 'text-success' : 'text-danger'">
-                  {{ gaps[i] > 0 ? "+" : "" }}{{ gaps[i] }}
-                </td>
-              </tr>
-              <tr v-if="!lines.length">
-                <td colspan="4" class="py-6 text-center text-body">Aucun produit stockable.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="pb-3 font-medium">Produit</th>
+                  <th class="pb-3 font-medium">Théorique</th>
+                  <th class="pb-3 font-medium">Réel</th>
+                  <th class="pb-3 font-medium">Écart</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(line, i) in lines" :key="line.productId" class="border-b border-border">
+                  <td class="py-3">{{ line.label }}</td>
+                  <td class="py-3">{{ line.theoretical }}</td>
+                  <td class="py-3">
+                    <input
+                      v-model.number="line.real"
+                      type="number"
+                      min="0"
+                      :disabled="done"
+                      class="h-9 w-24 rounded-lg border border-border bg-transparent px-2 focus:border-primary"
+                    />
+                  </td>
+                  <td class="py-3" :class="gaps[i] === 0 ? '' : gaps[i] > 0 ? 'text-success' : 'text-danger'">
+                    {{ gaps[i] > 0 ? "+" : "" }}{{ gaps[i] }}
+                  </td>
+                </tr>
+                <tr v-if="!lines.length">
+                  <td colspan="4" class="py-6 text-center text-body">Aucun produit stockable.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <button
             v-if="!done"

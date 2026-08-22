@@ -22,8 +22,18 @@ function pad2(n: number): string {
   return String(n).padStart(2, "0");
 }
 
+const MONTHS_FR = [
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
+];
+
+/** Date.prototype.getDay()-indexed (0 = Sunday), for the clock/greeting widgets. */
+export const WEEKDAYS_FR = [
+  "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi",
+];
+
 /**
- * Manual DD/MM/YYYY formatting instead of Date.prototype.toLocaleDateString():
+ * Manual "01 Janvier 2026" formatting instead of Date.prototype.toLocaleDateString():
  * same rationale as formatAmount() above — Node's ICU data and the browser's
  * can disagree on the same locale/options, which caused a real SSR/CSR
  * hydration mismatch in this codebase for money. Extracting the fields by
@@ -32,7 +42,7 @@ function pad2(n: number): string {
 export function formatDate(value: string | Date): string {
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
-  return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
+  return `${pad2(d.getDate())} ${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 /** Same as formatDate(), with an "HH:MM" time appended. */

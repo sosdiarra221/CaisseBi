@@ -228,8 +228,12 @@ const columns = [
     className: "text-end",
     render: (_d: any, type: string, row: any) => {
       if (type !== "display") return "";
-      const toggleLabel = row.active ? "Désactiver" : "Réactiver";
-      return `<div class="flex justify-end gap-3"><button type="button" class="js-edit text-primary">Modifier</button><button type="button" class="js-toggle text-danger">${toggleLabel}</button></div>`;
+      const toggleIcon = row.active ? "fa-ban" : "fa-rotate-left";
+      const toggleTitle = row.active ? "Désactiver" : "Réactiver";
+      return `<div class="flex justify-end gap-1.5">
+        <button type="button" class="js-edit row-action-btn text-primary hover:bg-primarylight" title="Modifier"><i class="fa fa-pen"></i></button>
+        <button type="button" class="js-toggle row-action-btn text-danger hover:bg-dangerlight" title="${toggleTitle}"><i class="fa ${toggleIcon}"></i></button>
+      </div>`;
     },
   },
 ];

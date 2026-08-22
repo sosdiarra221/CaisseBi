@@ -1,5 +1,28 @@
 <script lang="ts" setup>
+import DataTable from "datatables.net-vue3";
+import DataTablesCore from "datatables.net";
+
+DataTable.use(DataTablesCore);
+
 definePageMeta({ layout: "home" });
+
+const DT_LANGUAGE = {
+  search: "",
+  searchPlaceholder: "Rechercher...",
+  lengthMenu: "Afficher _MENU_ catégories",
+  info: "Affichage de _START_ à _END_ sur _TOTAL_ catégories",
+  infoEmpty: "Aucune catégorie",
+  infoFiltered: "(filtré depuis _MAX_ catégories)",
+  zeroRecords: "Aucune catégorie ne correspond à la recherche",
+  emptyTable: "Aucune catégorie.",
+  paginate: { previous: "Précédent", next: "Suivant" },
+};
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string
+  );
+}
 
 const { data: categories, refresh } = await useFetch("/api/categories");
 const toast = useToast();
@@ -66,6 +89,47 @@ async function remove(cat: any) {
     toast.error(e?.data?.statusMessage || "Erreur");
   }
 }
+
+const columns = [
+  {
+    data: "name",
+    render: (name: string, type: string) => (type === "display" ? escapeHtml(name) : name),
+  },
+  {
+    data: null,
+    className: "max-sm:hidden",
+    render: (_d: any, type: string, row: any) => {
+      const parentName = categories.value?.find((c) => c.id === row.parentId)?.name ?? "—";
+      return type === "display" ? escapeHtml(parentName) : parentName;
+    },
+  },
+  {
+    data: "_count.products",
+    defaultContent: 0,
+  },
+  {
+    data: null,
+    orderable: false,
+    searchable: false,
+    className: "text-end",
+    render: (_d: any, type: string) => {
+      if (type !== "display") return "";
+      return `<div class="flex justify-end gap-1.5">
+        <button type="button" class="js-edit row-action-btn text-primary hover:bg-primarylight" title="Modifier"><i class="fa fa-pen"></i></button>
+        <button type="button" class="js-delete row-action-btn text-danger hover:bg-dangerlight" title="Supprimer"><i class="fa fa-trash"></i></button>
+      </div>`;
+    },
+  },
+];
+
+const tableOptions = {
+  order: [[0, "asc"]] as any,
+  language: DT_LANGUAGE,
+  createdRow: (row: HTMLElement, data: any) => {
+    row.querySelector(".js-edit")?.addEventListener("click", () => openEdit(data));
+    row.querySelector(".js-delete")?.addEventListener("click", () => remove(data));
+  },
+};
 </script>
 
 <template>
@@ -80,34 +144,24 @@ async function remove(cat: any) {
           </button>
         </div>
         <div class="p-5">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-border">
-                <th class="pb-3 font-medium">Nom</th>
-                <th class="pb-3 font-medium">Catégorie parente</th>
-                <th class="pb-3 font-medium">Produits</th>
-                <th class="pb-3 font-medium text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="cat in categories" :key="cat.id" class="border-b border-border">
-                <td class="py-3">{{ cat.name }}</td>
-                <td class="py-3">
-                  {{ categories?.find((c) => c.id === cat.parentId)?.name ?? "—" }}
-                </td>
-                <td class="py-3">{{ cat._count?.products ?? 0 }}</td>
-                <td class="py-3 text-end">
-                  <button type="button" class="text-primary mr-3" @click="openEdit(cat)">
-                    Modifier
-                  </button>
-                  <button type="button" class="text-danger" @click="remove(cat)">Supprimer</button>
-                </td>
-              </tr>
-              <tr v-if="!categories?.length">
-                <td colspan="4" class="py-6 text-center text-body">Aucune catégorie.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto">
+            <DataTable
+              id="categoriesTable"
+              class="display table !mb-6 text-left"
+              :data="categories ?? []"
+              :columns="columns"
+              :options="tableOptions"
+            >
+              <thead>
+                <tr>
+                  <th class="!border-border !font-medium">Nom</th>
+                  <th class="!border-border !font-medium max-sm:hidden">Catégorie parente</th>
+                  <th class="!border-border !font-medium">Produits</th>
+                  <th class="!border-border !font-medium text-end">Actions</th>
+                </tr>
+              </thead>
+            </DataTable>
+          </div>
         </div>
       </div>
     </div>

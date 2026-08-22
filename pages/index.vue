@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import VueApexCharts from "vue3-apexcharts";
-import { formatAmount } from "~/lib/format";
+import { formatAmount, formatDate, WEEKDAYS_FR } from "~/lib/format";
 import { productAvatar } from "~/lib/avatar";
 import { Store } from "~/store/Store";
 
@@ -36,10 +36,7 @@ onMounted(() => {
 });
 onUnmounted(() => clockTimer && clearInterval(clockTimer));
 
-const todayLabel = computed(() => {
-  const s = now.value.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  return s.charAt(0).toUpperCase() + s.slice(1);
-});
+const todayLabel = computed(() => `${WEEKDAYS_FR[now.value.getDay()]} ${formatDate(now.value)}`);
 const nowTimeLabel = computed(() => now.value.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }));
 
 function pctLabel(pct: number): string {
