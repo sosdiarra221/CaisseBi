@@ -105,7 +105,7 @@ useHead(() => ({
   >
     <!-- Logo -->
     <div class="px-4 pb-1 pt-4 text-center">
-      <img src="assets/images/logo-caissebi.png" alt="CaisseBi" class="mx-auto" style="max-width: 65%" />
+      <img src="assets/images/logo-grace-dor.png" alt="La Grâce d'Or" class="mx-auto" style="max-width: 85%" />
     </div>
 
     <!-- Banner -->
@@ -200,7 +200,7 @@ useHead(() => ({
         <i class="fa fa-handshake" :style="{ color: GOLD }"></i>
         <span class="h-px flex-1" style="background: #d8dcec"></span>
       </div>
-      <p class="font-semibold" :style="{ color: NAVY }">CaisseBi – La Caisse, toujours à votre service</p>
+      <p class="font-semibold" :style="{ color: NAVY }">{{ company.name }} – toujours à votre service</p>
     </div>
   </div>
 </template>

@@ -221,7 +221,7 @@ function printReport() {
         <!-- Header band -->
         <div class="flex flex-wrap items-start justify-between gap-4 p-6">
           <div class="flex shrink-0 items-center">
-            <img src="assets/images/logo-caissebi.png" alt="CaisseBi" style="max-width: 140px" />
+            <img src="assets/images/logo-grace-dor.png" alt="La Grâce d'Or" style="max-width: 140px" />
           </div>
 
           <div class="flex-1 min-w-[260px] text-center">
