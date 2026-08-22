@@ -45,6 +45,16 @@ const toast = useToast();
 const saving = ref(false);
 const errorMessage = ref("");
 
+const push = usePushNotifications();
+async function enablePush() {
+  const ok = await push.subscribe();
+  if (ok) toast.success("Notifications activées.");
+  else if (push.error.value) toast.error(push.error.value);
+  else if (push.permission.value === "denied") {
+    toast.error("Notifications bloquées — autorisez-les dans les réglages du navigateur.");
+  }
+}
+
 async function save() {
   saving.value = true;
   errorMessage.value = "";
@@ -198,6 +208,44 @@ async function save() {
                   <input v-model="form.receiptFooter" type="text" class="h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary" />
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Notifications push -->
+          <div class="card !h-auto">
+            <div class="p-5">
+              <div class="mb-4 flex items-center gap-3">
+                <span class="flex size-9 shrink-0 items-center justify-center rounded-full text-white" :style="{ background: NAVY }">
+                  <i class="fa fa-bell"></i>
+                </span>
+                <div>
+                  <h5 class="text-sm font-semibold uppercase text-body">Notifications</h5>
+                  <p class="text-2xs text-body/70">Alertes en temps réel sur cet appareil</p>
+                </div>
+              </div>
+
+              <p class="mb-4 text-2sm text-body">
+                Recevez une notification pour : stock faible, nouvelle vente, licence bientôt expirée, écart de caisse à la fermeture.
+              </p>
+
+              <div v-if="!push.isSupported" class="rounded-lg bg-bodybg px-3 py-2 text-2sm text-body">
+                Non supporté sur ce navigateur/appareil.
+              </div>
+              <div v-else-if="push.permission.value === 'granted'" class="flex items-center gap-2 rounded-lg bg-successlight px-3 py-2 text-2sm font-semibold text-success">
+                <i class="fa fa-check-circle"></i> Notifications activées sur cet appareil
+              </div>
+              <div v-else-if="push.permission.value === 'denied'" class="rounded-lg bg-dangerlight px-3 py-2 text-2sm text-danger">
+                Bloquées par le navigateur — autorisez les notifications pour ce site dans ses réglages, puis rechargez la page.
+              </div>
+              <button
+                v-else
+                type="button"
+                class="btn bg-primary text-white"
+                :disabled="push.loading.value"
+                @click="enablePush"
+              >
+                <i class="fa fa-bell mr-2"></i>{{ push.loading.value ? "Activation..." : "Activer les notifications" }}
+              </button>
             </div>
           </div>
         </div>

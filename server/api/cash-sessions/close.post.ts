@@ -2,6 +2,8 @@ import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireRole } from "~/server/utils/authz";
 import { logAudit } from "~/server/utils/audit";
+import { formatAmount } from "~/lib/format";
+import { getSupervisorUserIds, sendPushToUsers } from "~/server/utils/push";
 
 const bodySchema = z.object({
   cashSessionId: z.number().int().positive(),
@@ -58,6 +60,16 @@ export default defineEventHandler(async (event) => {
     entityId: session.id,
     newValue: { theoreticalAmount, countedAmount: data.countedAmount, gap },
   });
+
+  if (gap !== 0) {
+    const company = await prisma.company.findUnique({ where: { id: user.companyId } });
+    const sign = gap > 0 ? "+" : "";
+    await sendPushToUsers(await getSupervisorUserIds(user.companyId), {
+      title: "Écart de caisse à la fermeture",
+      body: `${sign}${formatAmount(gap)} ${company?.currency ?? ""} d'écart constaté à la fermeture d'une session.`,
+      url: "/caisse",
+    });
+  }
 
   return updated;
 });

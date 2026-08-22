@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireUser } from "~/server/utils/authz";
+import { formatAmount } from "~/lib/format";
+import { getOwnerUserIds, getSupervisorUserIds, sendPushToUsers } from "~/server/utils/push";
 
 const bodySchema = z.object({
   cashSessionId: z.number().int().positive(),
@@ -112,6 +114,29 @@ export default defineEventHandler(async (event) => {
 
     return created;
   });
+
+  const company = await prisma.company.findUnique({ where: { id: user.companyId } });
+  const currency = company?.currency ?? "";
+
+  await sendPushToUsers(await getOwnerUserIds(user.companyId), {
+    title: "Nouvelle vente",
+    body: `Vente #${String(sale.number).padStart(6, "0")} — ${formatAmount(total)} ${currency}`,
+    url: "/ventes",
+  });
+
+  const lowStockLines = lineData.filter(
+    (l) => l.product.stockable && l.product.quantity - l.quantity <= l.product.alertThreshold
+  );
+  if (lowStockLines.length) {
+    const supervisorIds = await getSupervisorUserIds(user.companyId);
+    for (const l of lowStockLines) {
+      await sendPushToUsers(supervisorIds, {
+        title: "Stock faible",
+        body: `${l.product.label} : ${l.product.quantity - l.quantity} restant(s) (seuil ${l.product.alertThreshold})`,
+        url: "/stock",
+      });
+    }
+  }
 
   return sale;
 });

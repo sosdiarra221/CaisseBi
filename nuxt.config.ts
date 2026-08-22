@@ -6,6 +6,14 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["nuxt-auth-utils", "@vite-pwa/nuxt"],
   // css: ["~/assets/css/common.css", "~/assets/css/style.css"],
+  runtimeConfig: {
+    // Declaring the key (even empty) is what makes Nuxt pick up the
+    // NUXT_PUBLIC_FIREBASE_VAPID_KEY env var and expose it to the client —
+    // see lib/firebase-client.ts.
+    public: {
+      firebaseVapidKey: "",
+    },
+  },
   postcss: {
     plugins: {
       tailwindcss: {},

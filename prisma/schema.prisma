@@ -65,8 +65,19 @@ model User {
   passwordResetTokens PasswordResetToken[]
   expenses           Expense[]
   generatedLicenses  License[]
+  pushSubscriptions  PushSubscription[]
 
   @@index([companyId])
+}
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  token     String   @unique @db.VarChar(512)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model PasswordResetToken {
@@ -298,6 +309,10 @@ model License {
   activatedAt       DateTime?
   expiresAt         DateTime?
   createdAt         DateTime  @default(now())
+  // Dedupes the "licence bientôt expirée" push notification to once per
+  // license (see server/api/license/status.get.ts) instead of re-sending it
+  // on every status check while the license sits in the expiry window.
+  expiryNotifiedAt  DateTime?
 
   @@index([companyId])
 }

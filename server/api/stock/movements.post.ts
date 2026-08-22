@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { logAudit } from "~/server/utils/audit";
+import { getSupervisorUserIds, sendPushToUsers } from "~/server/utils/push";
 
 const REASONS = [
   "Réception",
@@ -66,6 +67,15 @@ export default defineEventHandler(async (event) => {
     oldValue: { quantity: product.quantity },
     newValue: { quantity: product.quantity + delta },
   });
+
+  const newQuantity = product.quantity + delta;
+  if (data.type === "OUT" && newQuantity <= product.alertThreshold) {
+    await sendPushToUsers(await getSupervisorUserIds(user.companyId), {
+      title: "Stock faible",
+      body: `${product.label} : ${newQuantity} restant(s) (seuil ${product.alertThreshold})`,
+      url: "/stock",
+    });
+  }
 
   return movement;
 });
