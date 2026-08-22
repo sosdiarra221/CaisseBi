@@ -104,7 +104,7 @@ async function logout() {
           <img
             src="~/assets/images/logo-grace-dor.png"
             alt="La Grâce d'Or"
-            class="hidden h-9 w-auto max-w-[9rem] object-contain sm:block"
+            class="hidden h-11 w-auto max-w-[11rem] object-contain sm:block"
           />
         </div>
 
