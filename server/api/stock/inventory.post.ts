@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { logAudit } from "~/server/utils/audit";
+import { resolveStoreScope, resolveWriteStoreId } from "~/server/utils/storeScope";
 
 const bodySchema = z.object({
   lines: z
@@ -20,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
   const productIds = lines.map((l) => l.productId);
   const products = await prisma.product.findMany({
-    where: { id: { in: productIds }, companyId: user.companyId },
+    where: { id: { in: productIds }, companyId: user.companyId, ...resolveStoreScope(user) },
   });
   const productMap = new Map(products.map((p) => [p.id, p]));
 
@@ -28,6 +29,7 @@ export default defineEventHandler(async (event) => {
     const inventorySession = await tx.inventorySession.create({
       data: {
         companyId: user.companyId,
+        storeId: resolveWriteStoreId(user),
         userId: user.id,
         status: "VALIDATED",
         validatedAt: new Date(),

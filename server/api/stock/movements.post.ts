@@ -3,6 +3,7 @@ import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { logAudit } from "~/server/utils/audit";
 import { getSupervisorUserIds, sendPushToUsers } from "~/server/utils/push";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 const REASONS = [
   "Réception",
@@ -29,7 +30,7 @@ export default defineEventHandler(async (event) => {
   const data = await readValidatedBody(event, bodySchema.parse);
 
   const product = await prisma.product.findFirst({
-    where: { id: data.productId, companyId: user.companyId },
+    where: { id: data.productId, companyId: user.companyId, ...resolveStoreScope(user) },
   });
   if (!product) throw createError({ statusCode: 404, statusMessage: "Produit introuvable" });
   if (!product.stockable) {

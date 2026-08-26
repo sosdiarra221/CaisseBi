@@ -29,6 +29,29 @@ function onHamburgerClick() {
 
 const { data: company } = await useFetch("/api/company");
 const { data: summary } = await useFetch("/api/dashboard/summary");
+// 403s for non-OWNER — the switcher below just doesn't render for them.
+const { data: stores } = await useFetch("/api/stores");
+
+const activeStoreName = computed(() => {
+  if (!user.value?.activeStoreId) return "Tous les magasins";
+  return stores.value?.find((s) => s.id === user.value?.activeStoreId)?.name ?? "Magasin";
+});
+
+const switchingStore = ref(false);
+async function switchStore(storeId: number | null) {
+  if (storeId === (user.value?.activeStoreId ?? null)) return;
+  switchingStore.value = true;
+  try {
+    await $fetch("/api/stores/switch", { method: "POST", body: { storeId } });
+    // A hard reload is the simplest way to guarantee every already-fetched
+    // page (dashboard, produits, stock...) re-fetches under the new store
+    // scope — most of them useFetch once at setup time, not on a session
+    // change.
+    window.location.reload();
+  } catch {
+    switchingStore.value = false;
+  }
+}
 
 // Fullscreen toggle. Guarded for SSR: document doesn't exist on the server.
 const isFullscreen = ref(false);
@@ -47,7 +70,7 @@ onMounted(() => document.addEventListener("fullscreenchange", syncFullscreenStat
 onUnmounted(() => document.removeEventListener("fullscreenchange", syncFullscreenState));
 
 const ROLE_LABELS: Record<string, string> = {
-  OWNER: "Propriétaire",
+  OWNER: "Direction",
   MANAGER: "Manager",
   GERANT: "Gérant",
   CASHIER: "Caissier",
@@ -57,12 +80,13 @@ const roleLabel = computed(() => ROLE_LABELS[user.value?.role ?? ""] ?? user.val
 const avatar = computed(() => productAvatar(user.value?.name ?? "?"));
 const lowStockCount = computed(() => summary.value?.lowStockCount ?? 0);
 
-const open = reactive({ notif: false, profile: false });
+const open = reactive({ notif: false, profile: false, stores: false });
 
 function outsideclickHandler(event: MouseEvent) {
   const target = event.target as HTMLElement;
   if (!target.closest("#hdr-notif")) open.notif = false;
   if (!target.closest("#hdr-profile")) open.profile = false;
+  if (!target.closest("#hdr-stores")) open.stores = false;
 }
 onMounted(() => document.addEventListener("click", outsideclickHandler));
 onUnmounted(() => document.removeEventListener("click", outsideclickHandler));
@@ -119,10 +143,60 @@ async function logout() {
           />
         </div>
 
-        <!-- Right: store pill, notifications, fullscreen, profile — pinned to the far right regardless of how much space the search box uses -->
+        <!-- Right: store switcher/pill, notifications, fullscreen, profile — pinned to the far right regardless of how much space the search box uses -->
         <div class="ml-auto flex shrink-0 items-center gap-3">
+        <!-- Store switcher: Direction only, and only once there's more than
+             one store to switch between — otherwise it's just noise. -->
+        <div
+          v-if="user?.role === 'OWNER' && stores && stores.length > 1"
+          id="hdr-stores"
+          class="relative hidden shrink-0 sm:block"
+        >
+          <button
+            type="button"
+            class="flex items-center gap-2 rounded-full px-4 py-2 text-2sm font-semibold disabled:opacity-60"
+            :style="{ background: '#F5F7FB', color: NAVY }"
+            :disabled="switchingStore"
+            @click="open.stores = !open.stores"
+          >
+            <i class="fa fa-location-dot" :style="{ color: GOLD }"></i>
+            <span class="max-w-[10rem] truncate">{{ activeStoreName }}</span>
+            <i class="fa fa-chevron-down text-2xs text-body"></i>
+          </button>
+          <div
+            v-show="open.stores"
+            class="absolute right-0 top-full z-20 mt-3 w-64 overflow-hidden rounded-xl border border-border bg-white shadow-dropdown"
+          >
+            <button
+              type="button"
+              class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-2sm hover:bg-[#F5F7FB]"
+              :class="!user?.activeStoreId ? 'font-bold' : ''"
+              :style="{ color: NAVY }"
+              @click="switchStore(null); open.stores = false"
+            >
+              <i class="fa fa-layer-group" :style="{ color: GOLD }"></i>Tous les magasins
+            </button>
+            <button
+              v-for="s in stores"
+              :key="s.id"
+              type="button"
+              class="flex w-full items-center gap-2.5 border-t border-border px-4 py-2.5 text-left text-2sm hover:bg-[#F5F7FB]"
+              :class="user?.activeStoreId === s.id ? 'font-bold' : ''"
+              :style="{ color: NAVY }"
+              @click="switchStore(s.id); open.stores = false"
+            >
+              <i class="fa fa-store" :style="{ color: GOLD }"></i>
+              <span class="truncate">{{ s.name }}</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Store pill (single-store install: shows the real company name) -->
-        <div class="hidden shrink-0 items-center gap-2 rounded-full px-4 py-2 text-2sm font-semibold sm:flex" :style="{ background: '#F5F7FB', color: NAVY }">
+        <div
+          v-else
+          class="hidden shrink-0 items-center gap-2 rounded-full px-4 py-2 text-2sm font-semibold sm:flex"
+          :style="{ background: '#F5F7FB', color: NAVY }"
+        >
           <i class="fa fa-location-dot" :style="{ color: GOLD }"></i>
           <span class="max-w-[10rem] truncate">{{ company?.name || "Ma boutique" }}</span>
         </div>

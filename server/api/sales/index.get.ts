@@ -1,5 +1,6 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireUser } from "~/server/utils/authz";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event);
@@ -16,6 +17,7 @@ export default defineEventHandler(async (event) => {
   return prisma.sale.findMany({
     where: {
       companyId: user.companyId,
+      ...resolveStoreScope(user),
       userId,
       cashSessionId,
       createdAt: from || to ? { gte: from, lte: to } : undefined,

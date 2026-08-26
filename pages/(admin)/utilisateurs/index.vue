@@ -22,6 +22,10 @@ function escapeHtml(value: unknown): string {
 
 const { user } = useUserSession();
 const { data: users, refresh } = await useFetch("/api/users");
+// 403s for non-OWNER (store management is Direction-only) — the store
+// picker below simply doesn't render for them, since they can't create or
+// edit users anyway (server-enforced).
+const { data: stores } = await useFetch("/api/stores");
 const toast = useToast();
 const { confirmAction } = useConfirm();
 
@@ -37,6 +41,7 @@ const form = reactive({
   password: "",
   pinCode: "",
   role: "CASHIER" as "OWNER" | "MANAGER" | "GERANT" | "CASHIER",
+  storeId: null as number | null,
 });
 
 // 4-digit PIN — required on create (it's now the login credential, along
@@ -46,13 +51,13 @@ const pinCodeValid = computed(() => !form.pinCode || /^\d{4}$/.test(form.pinCode
 
 function openCreate() {
   editing.value = null;
-  Object.assign(form, { name: "", email: "", username: "", password: "", pinCode: "", role: "CASHIER" });
+  Object.assign(form, { name: "", email: "", username: "", password: "", pinCode: "", role: "CASHIER", storeId: null });
   showForm.value = true;
 }
 
 function openEdit(u: any) {
   editing.value = u;
-  Object.assign(form, { name: u.name, email: u.email, username: u.username, password: "", pinCode: "", role: u.role });
+  Object.assign(form, { name: u.name, email: u.email, username: u.username, password: "", pinCode: "", role: u.role, storeId: u.storeId });
   showForm.value = true;
 }
 
@@ -66,6 +71,7 @@ async function save() {
   try {
     if (editing.value) {
       const body: any = { name: form.name, username: form.username, role: form.role };
+      if (form.role !== "OWNER") body.storeId = form.storeId;
       if (form.password) body.password = form.password;
       if (form.pinCode) body.pinCode = form.pinCode;
       await $fetch(`/api/users/${editing.value.id}`, { method: "PATCH", body });
@@ -77,6 +83,7 @@ async function save() {
         password: form.password,
         pinCode: form.pinCode,
         role: form.role,
+        storeId: form.role === "OWNER" ? null : form.storeId,
       };
       await $fetch("/api/users", {
         method: "POST",
@@ -108,7 +115,7 @@ async function toggleActive(u: any) {
 }
 
 const ROLE_LABELS: Record<string, string> = {
-  OWNER: "Propriétaire",
+  OWNER: "Direction",
   MANAGER: "Manager",
   GERANT: "Gérant",
   CASHIER: "Caissier",
@@ -132,6 +139,12 @@ const columns = [
   {
     data: "role",
     render: (role: string, type: string) => (type === "display" ? escapeHtml(ROLE_LABELS[role] ?? role) : role),
+  },
+  {
+    data: "store.name",
+    className: "max-lg:hidden",
+    defaultContent: "—",
+    render: (name: string, type: string) => (type === "display" ? escapeHtml(name ?? "Tous les magasins") : name ?? ""),
   },
   {
     data: "active",
@@ -197,6 +210,7 @@ const tableOptions = {
                   <th class="!border-border !font-medium max-md:hidden">Identifiant</th>
                   <th class="!border-border !font-medium max-lg:hidden">Email</th>
                   <th class="!border-border !font-medium">Rôle</th>
+                  <th class="!border-border !font-medium max-lg:hidden">Magasin</th>
                   <th class="!border-border !font-medium">Statut</th>
                   <th class="!border-border !font-medium text-end">Actions</th>
                 </tr>
@@ -240,12 +254,21 @@ const tableOptions = {
         <p v-else class="mb-3 text-2xs text-body">Utilisé avec l'identifiant pour se connecter, et pour le déverrouillage rapide de session.</p>
 
         <label class="mb-1">Rôle</label>
-        <select v-model="form.role" class="mb-5 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary">
-          <option value="OWNER">Propriétaire</option>
+        <select v-model="form.role" class="mb-3 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary">
+          <option value="OWNER">Direction</option>
           <option value="MANAGER">Manager</option>
           <option value="GERANT">Gérant</option>
           <option value="CASHIER">Caissier</option>
         </select>
+
+        <template v-if="form.role !== 'OWNER'">
+          <label class="mb-1">Magasin</label>
+          <select v-model="form.storeId" class="mb-5 h-11 w-full rounded-lg border border-border bg-transparent px-3 focus:border-primary">
+            <option :value="null" disabled>Sélectionner...</option>
+            <option v-for="s in stores" :key="s.id" :value="s.id">{{ s.name }}</option>
+          </select>
+        </template>
+        <p v-else class="mb-5 text-2xs text-body">La Direction voit tous les magasins et peut basculer entre eux.</p>
 
         <div class="flex gap-2">
           <button type="button" class="btn flex-1 border border-border" @click="showForm = false">Annuler</button>
@@ -257,6 +280,7 @@ const tableOptions = {
               !form.name ||
               !form.username ||
               !pinCodeValid ||
+              (form.role !== 'OWNER' && !form.storeId) ||
               (!editing && (!form.email || !form.password || !form.pinCode))
             "
             @click="save"

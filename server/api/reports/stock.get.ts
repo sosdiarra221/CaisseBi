@@ -1,6 +1,7 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { getBusinessDayRange } from "~/server/utils/businessDay";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "rapports");
@@ -25,14 +26,16 @@ export default defineEventHandler(async (event) => {
     ({ from, to } = getBusinessDayRange(dateStr, company ?? { openTime: null, closeTime: null }));
   }
 
+  const storeScope = resolveStoreScope(user);
+
   const products = await prisma.product.findMany({
-    where: { companyId: user.companyId, active: true, stockable: true },
+    where: { companyId: user.companyId, ...storeScope, active: true, stockable: true },
     select: { id: true, label: true, quantity: true, alertThreshold: true },
     orderBy: { label: "asc" },
   });
 
   const movements = await prisma.stockMovement.findMany({
-    where: { product: { companyId: user.companyId }, createdAt: { gte: from, lte: to } },
+    where: { product: { companyId: user.companyId, ...storeScope }, createdAt: { gte: from, lte: to } },
     include: { product: { select: { label: true } } },
   });
 

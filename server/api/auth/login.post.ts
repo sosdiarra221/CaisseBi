@@ -41,6 +41,8 @@ export default defineEventHandler(async (event) => {
       email: user.email,
       role: user.role,
       companyId: user.companyId,
+      storeId: user.storeId,
+      activeStoreId: null,
     },
   });
 

@@ -1,12 +1,13 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireUser } from "~/server/utils/authz";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event);
   const id = Number(getRouterParam(event, "id"));
 
   const session = await prisma.cashSession.findFirst({
-    where: { id, cashRegister: { companyId: user.companyId } },
+    where: { id, cashRegister: { companyId: user.companyId, ...resolveStoreScope(user) } },
     include: {
       cashRegister: true,
       user: { select: { id: true, name: true } },

@@ -49,6 +49,13 @@ async function main() {
     },
   });
 
+  // Every single-store install (still the common case) gets exactly one
+  // store, matching the migration backfill's naming — same idea, just for
+  // brand-new databases that never went through that migration's UPDATE.
+  const store =
+    (await prisma.store.findFirst({ where: { companyId: company.id } })) ??
+    (await prisma.store.create({ data: { companyId: company.id, name: "Magasin principal" } }));
+
   // Seeded accounts get their PIN backfilled on `update` too (unlike
   // password, which is left alone once set) so that re-running this seed on
   // an already-seeded dev database — the common case, since these 3 accounts
@@ -81,6 +88,7 @@ async function main() {
       password: await hashPassword(DEFAULT_PASSWORD),
       pinCode: seededPin,
       role: "MANAGER",
+      storeId: store.id,
     },
   });
 
@@ -89,6 +97,7 @@ async function main() {
     update: { pinCode: seededPin, username: CASHIER_USERNAME },
     create: {
       companyId: company.id,
+      storeId: store.id,
       name: CASHIER_NAME,
       email: CASHIER_EMAIL,
       username: CASHIER_USERNAME,
@@ -119,7 +128,7 @@ async function main() {
   const register = await prisma.cashRegister.upsert({
     where: { id: 1 },
     update: {},
-    create: { companyId: company.id, name: "Caisse 01" },
+    create: { companyId: company.id, storeId: store.id, name: "Caisse 01" },
   });
 
   const categoryNames = ["Boissons", "Plats", "Desserts", "Services"];
@@ -128,7 +137,7 @@ async function main() {
     const existing = await prisma.category.findFirst({ where: { companyId: company.id, name } });
     const category =
       existing ??
-      (await prisma.category.create({ data: { companyId: company.id, name } }));
+      (await prisma.category.create({ data: { companyId: company.id, storeId: store.id, name } }));
     categories[name] = category.id;
   }
 
@@ -150,6 +159,7 @@ async function main() {
     await prisma.product.create({
       data: {
         companyId: company.id,
+        storeId: store.id,
         label: p.label,
         categoryId: categories[p.category],
         stockable: p.stockable ?? true,

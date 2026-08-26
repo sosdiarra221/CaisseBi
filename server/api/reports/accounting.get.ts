@@ -1,5 +1,6 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 function firstDayOfMonth(): string {
   const d = new Date();
@@ -15,14 +16,16 @@ export default defineEventHandler(async (event) => {
   const from = new Date(`${fromStr}T00:00:00.000`);
   const to = new Date(`${toStr}T23:59:59.999`);
 
+  const storeScope = resolveStoreScope(user);
+
   const [sales, expenses] = await Promise.all([
     prisma.sale.findMany({
-      where: { companyId: user.companyId, status: "COMPLETED", createdAt: { gte: from, lte: to } },
+      where: { companyId: user.companyId, ...storeScope, status: "COMPLETED", createdAt: { gte: from, lte: to } },
       select: { id: true, number: true, total: true, createdAt: true },
       orderBy: { createdAt: "asc" },
     }),
     prisma.expense.findMany({
-      where: { companyId: user.companyId, date: { gte: from, lte: to } },
+      where: { companyId: user.companyId, ...storeScope, date: { gte: from, lte: to } },
       include: { user: { select: { id: true, name: true } } },
       orderBy: { date: "asc" },
     }),

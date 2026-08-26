@@ -1,6 +1,7 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireUser } from "~/server/utils/authz";
 import { getBusinessDayRange } from "~/server/utils/businessDay";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event);
@@ -21,10 +22,11 @@ export default defineEventHandler(async (event) => {
 
   const { from: startOfDay } = getBusinessDayRange(todayDateStr, companyHours);
   const { from: startOfYesterday } = getBusinessDayRange(yesterdayDateStr, companyHours);
+  const storeScope = resolveStoreScope(user);
 
   const [todaySales, yesterdaySales, lowStockProducts, openSessions, recentSales] = await Promise.all([
     prisma.sale.findMany({
-      where: { companyId: user.companyId, status: "COMPLETED", createdAt: { gte: startOfDay } },
+      where: { companyId: user.companyId, ...storeScope, status: "COMPLETED", createdAt: { gte: startOfDay } },
       select: {
         id: true,
         total: true,
@@ -40,19 +42,19 @@ export default defineEventHandler(async (event) => {
       },
     }),
     prisma.sale.findMany({
-      where: { companyId: user.companyId, status: "COMPLETED", createdAt: { gte: startOfYesterday, lt: startOfDay } },
+      where: { companyId: user.companyId, ...storeScope, status: "COMPLETED", createdAt: { gte: startOfYesterday, lt: startOfDay } },
       select: { total: true },
     }),
     prisma.product.findMany({
-      where: { companyId: user.companyId, active: true, stockable: true },
+      where: { companyId: user.companyId, ...storeScope, active: true, stockable: true },
       select: { id: true, label: true, quantity: true, alertThreshold: true },
     }),
     prisma.cashSession.findMany({
-      where: { status: "OPEN", cashRegister: { companyId: user.companyId } },
+      where: { status: "OPEN", cashRegister: { companyId: user.companyId, ...storeScope } },
       select: { id: true },
     }),
     prisma.sale.findMany({
-      where: { companyId: user.companyId, status: "COMPLETED" },
+      where: { companyId: user.companyId, ...storeScope, status: "COMPLETED" },
       include: { lines: true },
       orderBy: { createdAt: "desc" },
       take: 8,

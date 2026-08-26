@@ -1,5 +1,6 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireUser } from "~/server/utils/authz";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event);
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
       productId,
       type,
       createdAt: from || to ? { gte: from, lte: to } : undefined,
-      product: { companyId: user.companyId },
+      product: { companyId: user.companyId, ...resolveStoreScope(user) },
     },
     include: { product: true, user: { select: { id: true, name: true } } },
     orderBy: { createdAt: "desc" },

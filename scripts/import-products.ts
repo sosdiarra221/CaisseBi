@@ -190,6 +190,10 @@ async function main() {
   if (!company) {
     throw new Error("Aucune entreprise trouvée — lance d'abord `npm run db:seed`.");
   }
+  const store = await prisma.store.findFirst({ where: { companyId: company.id } });
+  if (!store) {
+    throw new Error("Aucun magasin trouvé pour cette entreprise.");
+  }
 
   const raw = await import("node:fs/promises").then((fs) => fs.readFile(CSV_PATH, "utf-8"));
   const table = parseCSV(raw);
@@ -259,7 +263,7 @@ async function main() {
   const categoryIds: Record<string, number> = {};
   for (const name of categoryNames) {
     const existing = await prisma.category.findFirst({ where: { companyId: company.id, name } });
-    const category = existing ?? (await prisma.category.create({ data: { companyId: company.id, name } }));
+    const category = existing ?? (await prisma.category.create({ data: { companyId: company.id, storeId: store.id, name } }));
     categoryIds[name] = category.id;
   }
   console.log(`Catégories : ${categoryNames.length} (${categoryNames.join(", ")})`);
@@ -311,6 +315,7 @@ async function main() {
     await prisma.product.create({
       data: {
         companyId: company.id,
+        storeId: store.id,
         label: p.label,
         categoryId: p.category ? categoryIds[p.category] : null,
         stockable: p.stockable,

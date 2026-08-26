@@ -1,6 +1,7 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { getBusinessDayRange } from "~/server/utils/businessDay";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "rapports");
@@ -27,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
   const sessions = await prisma.cashSession.findMany({
     where: {
-      cashRegister: { companyId: user.companyId },
+      cashRegister: { companyId: user.companyId, ...resolveStoreScope(user) },
       openedAt: { gte: from, lte: to },
     },
     include: { cashRegister: true, user: { select: { id: true, name: true } } },

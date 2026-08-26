@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireUser } from "~/server/utils/authz";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 const bodySchema = z.object({
   cashRegisterId: z.number().int().positive(),
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
   const data = await readValidatedBody(event, bodySchema.parse);
 
   const register = await prisma.cashRegister.findFirst({
-    where: { id: data.cashRegisterId, companyId: user.companyId },
+    where: { id: data.cashRegisterId, companyId: user.companyId, ...resolveStoreScope(user) },
   });
   if (!register) throw createError({ statusCode: 404, statusMessage: "Caisse introuvable" });
 

@@ -4,6 +4,7 @@ import { requireRole } from "~/server/utils/authz";
 import { logAudit } from "~/server/utils/audit";
 import { formatAmount } from "~/lib/format";
 import { getSupervisorUserIds, sendPushToUsers } from "~/server/utils/push";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 const bodySchema = z.object({
   cashSessionId: z.number().int().positive(),
@@ -20,7 +21,7 @@ export default defineEventHandler(async (event) => {
   const data = await readValidatedBody(event, bodySchema.parse);
 
   const session = await prisma.cashSession.findFirst({
-    where: { id: data.cashSessionId, status: "OPEN", cashRegister: { companyId: user.companyId } },
+    where: { id: data.cashSessionId, status: "OPEN", cashRegister: { companyId: user.companyId, ...resolveStoreScope(user) } },
   });
   if (!session) throw createError({ statusCode: 404, statusMessage: "Session introuvable ou déjà fermée" });
 

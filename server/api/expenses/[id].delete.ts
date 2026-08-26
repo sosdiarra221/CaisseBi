@@ -1,12 +1,13 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { logAudit } from "~/server/utils/audit";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "depenses");
   const id = Number(getRouterParam(event, "id"));
 
-  const expense = await prisma.expense.findFirst({ where: { id, companyId: user.companyId } });
+  const expense = await prisma.expense.findFirst({ where: { id, companyId: user.companyId, ...resolveStoreScope(user) } });
   if (!expense) throw createError({ statusCode: 404, statusMessage: "Dépense introuvable" });
 
   await prisma.expense.delete({ where: { id } });

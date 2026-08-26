@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
+import { resolveWriteStoreId } from "~/server/utils/storeScope";
 
 const bodySchema = z.object({
   label: z.string().min(1),
@@ -21,6 +22,6 @@ export default defineEventHandler(async (event) => {
   const data = await readValidatedBody(event, bodySchema.parse);
 
   return prisma.product.create({
-    data: { ...data, companyId: user.companyId },
+    data: { ...data, companyId: user.companyId, storeId: resolveWriteStoreId(user) },
   });
 });

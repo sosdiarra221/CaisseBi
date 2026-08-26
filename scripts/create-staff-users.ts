@@ -39,6 +39,15 @@ async function main() {
   const company = await prisma.company.findFirst();
   if (!company) throw new Error("Aucune entreprise trouvée — lance d'abord `npm run db:seed`.");
 
+  // Every non-Direction account needs a store. Defaults to the company's
+  // only store (the common case); if there's more than one, pass its id as
+  // a second CLI arg instead of guessing wrong.
+  const storeIdArg = process.argv[2] ? Number(process.argv[2]) : undefined;
+  const store = storeIdArg
+    ? await prisma.store.findFirst({ where: { id: storeIdArg, companyId: company.id } })
+    : await prisma.store.findFirst({ where: { companyId: company.id } });
+  if (!store) throw new Error("Aucun magasin trouvé — précise son id en argument si l'entreprise en a plusieurs.");
+
   const results: { username: string; pin: string; created: boolean }[] = [];
 
   for (const staff of STAFF) {
@@ -52,6 +61,7 @@ async function main() {
     await prisma.user.create({
       data: {
         companyId: company.id,
+        storeId: store.id,
         name: staff.name,
         email: `${staff.username}@caissebi.com`,
         username: staff.username,

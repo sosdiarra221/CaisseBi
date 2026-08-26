@@ -34,6 +34,7 @@ model Company {
   updatedAt      DateTime @updatedAt
 
   users             User[]
+  stores            Store[]
   categories        Category[]
   products           Product[]
   cashRegisters      CashRegister[]
@@ -45,10 +46,41 @@ model Company {
   rolePermissions    RolePermission[]
 }
 
+// A physical branch/location under a Company. Stores are fully independent
+// of each other (own catalog, categories, stock, sales, registers) — the
+// Company is just the umbrella that owns them all and that Direction
+// (the OWNER role) sees across. Every existing single-store install gets a
+// single "Magasin principal" Store row via migration backfill, so nothing
+// changes for them until they actually add a second store.
+model Store {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id])
+  name      String
+  address   String?
+  phone     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  users             User[]
+  categories        Category[]
+  products          Product[]
+  cashRegisters     CashRegister[]
+  sales             Sale[]
+  expenses          Expense[]
+  inventorySessions InventorySession[]
+
+  @@index([companyId])
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   companyId Int
   company   Company  @relation(fields: [companyId], references: [id])
+  // Null only for OWNER (Direction) — every other role must belong to
+  // exactly one store, enforced at user creation (server/api/users).
+  storeId   Int?
+  store     Store?   @relation(fields: [storeId], references: [id])
   name      String
   email     String   @unique
   username  String   @unique
@@ -97,6 +129,8 @@ model Category {
   id        Int        @id @default(autoincrement())
   companyId Int
   company   Company    @relation(fields: [companyId], references: [id])
+  storeId   Int
+  store     Store      @relation(fields: [storeId], references: [id])
   name      String
   parentId  Int?
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
@@ -106,12 +140,15 @@ model Category {
   products  Product[]
 
   @@index([companyId])
+  @@index([storeId])
 }
 
 model Product {
   id             Int       @id @default(autoincrement())
   companyId      Int
   company        Company   @relation(fields: [companyId], references: [id])
+  storeId        Int
+  store          Store     @relation(fields: [storeId], references: [id])
   label          String
   categoryId     Int?
   category       Category? @relation(fields: [categoryId], references: [id])
@@ -133,6 +170,7 @@ model Product {
   inventoryLines InventoryLine[]
 
   @@index([companyId])
+  @@index([storeId])
   @@index([barcode])
 }
 
@@ -166,6 +204,8 @@ model InventorySession {
   id          Int              @id @default(autoincrement())
   companyId   Int
   company     Company          @relation(fields: [companyId], references: [id])
+  storeId     Int
+  store       Store            @relation(fields: [storeId], references: [id])
   userId      Int
   user        User             @relation(fields: [userId], references: [id])
   status      InventoryStatus  @default(DRAFT)
@@ -175,6 +215,7 @@ model InventorySession {
   lines InventoryLine[]
 
   @@index([companyId])
+  @@index([storeId])
 }
 
 model InventoryLine {
@@ -194,12 +235,15 @@ model CashRegister {
   id        Int     @id @default(autoincrement())
   companyId Int
   company   Company @relation(fields: [companyId], references: [id])
+  storeId   Int
+  store     Store   @relation(fields: [storeId], references: [id])
   name      String
   active    Boolean @default(true)
 
   sessions CashSession[]
 
   @@index([companyId])
+  @@index([storeId])
 }
 
 enum CashSessionStatus {
@@ -237,6 +281,8 @@ model Sale {
   id            Int         @id @default(autoincrement())
   companyId     Int
   company       Company     @relation(fields: [companyId], references: [id])
+  storeId       Int
+  store         Store       @relation(fields: [storeId], references: [id])
   number        Int
   cashSessionId Int
   cashSession   CashSession @relation(fields: [cashSessionId], references: [id])
@@ -250,6 +296,7 @@ model Sale {
   payments Payment[]
 
   @@index([companyId])
+  @@index([storeId])
   @@index([cashSessionId])
 }
 
@@ -289,6 +336,8 @@ model Expense {
   id          Int      @id @default(autoincrement())
   companyId   Int
   company     Company  @relation(fields: [companyId], references: [id])
+  storeId     Int
+  store       Store    @relation(fields: [storeId], references: [id])
   date        DateTime
   amount      Decimal  @db.Decimal(12, 2)
   description String
@@ -298,6 +347,7 @@ model Expense {
   createdAt   DateTime @default(now())
 
   @@index([companyId])
+  @@index([storeId])
 }
 
 model License {

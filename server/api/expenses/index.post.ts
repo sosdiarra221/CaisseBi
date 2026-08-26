@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { logAudit } from "~/server/utils/audit";
+import { resolveWriteStoreId } from "~/server/utils/storeScope";
 
 // Categories are a plain string (not a Prisma enum), validated against this
 // fixed list on both ends — same approach as StockMovement.reason (see
@@ -32,6 +33,7 @@ export default defineEventHandler(async (event) => {
   const expense = await prisma.expense.create({
     data: {
       companyId: user.companyId,
+      storeId: resolveWriteStoreId(user),
       date: new Date(`${data.date}T00:00:00.000`),
       amount: data.amount,
       description: data.description || "",

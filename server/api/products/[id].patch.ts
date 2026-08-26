@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { logAudit } from "~/server/utils/audit";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 const bodySchema = z.object({
   label: z.string().min(1).optional(),
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
   const id = Number(getRouterParam(event, "id"));
   const data = await readValidatedBody(event, bodySchema.parse);
 
-  const before = await prisma.product.findFirst({ where: { id, companyId: user.companyId } });
+  const before = await prisma.product.findFirst({ where: { id, companyId: user.companyId, ...resolveStoreScope(user) } });
   if (!before) throw createError({ statusCode: 404, statusMessage: "Produit introuvable" });
 
   const product = await prisma.product.update({ where: { id }, data });

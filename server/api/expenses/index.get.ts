@@ -1,5 +1,6 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "depenses");
@@ -12,6 +13,7 @@ export default defineEventHandler(async (event) => {
   return prisma.expense.findMany({
     where: {
       companyId: user.companyId,
+      ...resolveStoreScope(user),
       category,
       date: from || to ? { gte: from, lte: to } : undefined,
     },

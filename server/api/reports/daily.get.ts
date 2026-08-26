@@ -1,6 +1,7 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { getBusinessDayRange } from "~/server/utils/businessDay";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "rapports");
@@ -12,15 +13,16 @@ export default defineEventHandler(async (event) => {
     select: { openTime: true, closeTime: true },
   });
   const { from, to } = getBusinessDayRange(dateStr, company ?? { openTime: null, closeTime: null });
+  const storeScope = resolveStoreScope(user);
 
   const [sales, cancelledCount, sessions] = await Promise.all([
     prisma.sale.findMany({
-      where: { companyId: user.companyId, status: "COMPLETED", createdAt: { gte: from, lte: to } },
+      where: { companyId: user.companyId, ...storeScope, status: "COMPLETED", createdAt: { gte: from, lte: to } },
       include: { lines: true, payments: true },
       orderBy: { createdAt: "asc" },
     }),
     prisma.sale.count({
-      where: { companyId: user.companyId, status: "CANCELLED", createdAt: { gte: from, lte: to } },
+      where: { companyId: user.companyId, ...storeScope, status: "CANCELLED", createdAt: { gte: from, lte: to } },
     }),
     // Sessions relevant to this day: opened or closed within the day. Used to
     // surface "Heure de clôture" / "Caissier" — the most recently closed
@@ -28,7 +30,7 @@ export default defineEventHandler(async (event) => {
     // one and the UI shows "En cours" instead of fabricating a closing time.
     prisma.cashSession.findMany({
       where: {
-        cashRegister: { companyId: user.companyId },
+        cashRegister: { companyId: user.companyId, ...storeScope },
         OR: [{ openedAt: { gte: from, lte: to } }, { closedAt: { gte: from, lte: to } }],
       },
       include: { user: { select: { id: true, name: true } } },

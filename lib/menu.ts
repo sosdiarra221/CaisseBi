@@ -65,6 +65,7 @@ export const menuItems: MenuItem[] = [
           { lable: "Inventaire", link: "/stock/inventaire" },
         ],
       },
+      { lable: "Magasins", link: "/magasins", roles: ["OWNER"] },
       { lable: "Caisse", link: "/caisse" },
       { lable: "Ventes", link: "/ventes" },
       { lable: "Dépenses", link: "/depenses", roles: ["OWNER", "MANAGER", "GERANT"] },

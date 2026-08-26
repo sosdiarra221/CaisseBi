@@ -1,11 +1,12 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "produits");
   const id = Number(getRouterParam(event, "id"));
 
-  const category = await prisma.category.findFirst({ where: { id, companyId: user.companyId } });
+  const category = await prisma.category.findFirst({ where: { id, companyId: user.companyId, ...resolveStoreScope(user) } });
   if (!category) throw createError({ statusCode: 404, statusMessage: "Catégorie introuvable" });
 
   const productCount = await prisma.product.count({ where: { categoryId: id } });

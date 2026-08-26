@@ -3,6 +3,7 @@ import { prisma } from "~/server/utils/prisma";
 import { requireUser } from "~/server/utils/authz";
 import { formatAmount } from "~/lib/format";
 import { getOwnerUserIds, getSupervisorUserIds, sendPushToUsers } from "~/server/utils/push";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 const bodySchema = z.object({
   cashSessionId: z.number().int().positive(),
@@ -30,9 +31,11 @@ export default defineEventHandler(async (event) => {
   const data = await readValidatedBody(event, bodySchema.parse);
 
   const session = await prisma.cashSession.findFirst({
-    where: { id: data.cashSessionId, status: "OPEN", cashRegister: { companyId: user.companyId } },
+    where: { id: data.cashSessionId, status: "OPEN", cashRegister: { companyId: user.companyId, ...resolveStoreScope(user) } },
+    include: { cashRegister: true },
   });
   if (!session) throw createError({ statusCode: 400, statusMessage: "Aucune session de caisse ouverte" });
+  const storeId = session.cashRegister.storeId;
 
   const canSell = user.role !== "CASHIER" || session.userId === user.id;
   if (!canSell) {
@@ -46,7 +49,7 @@ export default defineEventHandler(async (event) => {
 
   const productIds = data.lines.map((l) => l.productId);
   const products = await prisma.product.findMany({
-    where: { id: { in: productIds }, companyId: user.companyId, active: true },
+    where: { id: { in: productIds }, companyId: user.companyId, storeId, active: true },
   });
   const productMap = new Map(products.map((p) => [p.id, p]));
 
@@ -76,6 +79,7 @@ export default defineEventHandler(async (event) => {
     const created = await tx.sale.create({
       data: {
         companyId: user.companyId,
+        storeId,
         number,
         cashSessionId: session.id,
         userId: user.id,

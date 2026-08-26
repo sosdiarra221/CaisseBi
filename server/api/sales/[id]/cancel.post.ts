@@ -1,13 +1,14 @@
 import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { logAudit } from "~/server/utils/audit";
+import { resolveStoreScope } from "~/server/utils/storeScope";
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "ventes");
   const id = Number(getRouterParam(event, "id"));
 
   const sale = await prisma.sale.findFirst({
-    where: { id, companyId: user.companyId, status: "COMPLETED" },
+    where: { id, companyId: user.companyId, status: "COMPLETED", ...resolveStoreScope(user) },
     include: { lines: { include: { product: true } } },
   });
   if (!sale) throw createError({ statusCode: 404, statusMessage: "Vente introuvable ou déjà annulée" });
