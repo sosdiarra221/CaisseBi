@@ -20,8 +20,8 @@ const MARGIN_COLLAPSED = "5rem";
 // for it.
 const isMobileNav = computed(() => viewportWidth.value < 992);
 
-const { data: summary } = await useFetch("/api/dashboard/summary");
-const { data: company } = await useFetch("/api/company");
+const { data: summary, refresh: refreshSummary } = await useFetch("/api/dashboard/summary");
+const { data: company, refresh: refreshCompany } = await useFetch("/api/company");
 
 const currency = computed(() => company.value?.currency ?? "FCFA");
 
@@ -31,10 +31,26 @@ const currency = computed(() => company.value?.currency ?? "FCFA");
 // hydration mismatch — pos.vue hit exactly this and this avoids repeating it.
 const now = ref(new Date());
 let clockTimer: ReturnType<typeof setInterval> | undefined;
+
+// Dashboard polling: a plain interval refetch is "real-time enough" for a
+// business dashboard — a websocket/SSE push would be a lot of moving parts
+// for numbers where a ~30s lag is invisible to a human glancing at a
+// screen. Paused while the tab is hidden so it doesn't burn requests in a
+// background tab, and skips overlapping itself if a fetch is still pending.
+let statsTimer: ReturnType<typeof setInterval> | undefined;
+function pollStats() {
+  if (document.hidden) return;
+  refreshSummary();
+  refreshCompany();
+}
 onMounted(() => {
   clockTimer = setInterval(() => (now.value = new Date()), 30_000);
+  statsTimer = setInterval(pollStats, 30_000);
 });
-onUnmounted(() => clockTimer && clearInterval(clockTimer));
+onUnmounted(() => {
+  clockTimer && clearInterval(clockTimer);
+  statsTimer && clearInterval(statsTimer);
+});
 
 const todayLabel = computed(() => `${WEEKDAYS_FR[now.value.getDay()]} ${formatDate(now.value)}`);
 const nowTimeLabel = computed(() => now.value.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }));

@@ -13,24 +13,6 @@ const { data: license, refresh: refreshLicense, pending } = useLicenseStatus();
 
 const isOwner = computed(() => user.value?.role === "OWNER");
 
-// --- Generate ---------------------------------------------------------
-const generating = ref(false);
-const generatedKey = ref<string | null>(null);
-
-async function generate() {
-  generating.value = true;
-  try {
-    const res = await $fetch("/api/license/generate", { method: "POST" });
-    generatedKey.value = res.key;
-    toast.success("Nouvelle clé de licence générée.");
-    await refreshLicense();
-  } catch (e: any) {
-    toast.error(e?.data?.statusMessage || "Impossible de générer une licence");
-  } finally {
-    generating.value = false;
-  }
-}
-
 const copied = ref(false);
 async function copyKey(key: string) {
   try {
@@ -57,7 +39,6 @@ async function activate() {
     });
     toast.success("Licence activée. 30 jours d'accès démarrent maintenant.");
     activateKey.value = "";
-    generatedKey.value = null;
     await refreshLicense();
   } catch (e: any) {
     toast.error(e?.data?.statusMessage || "Clé de licence invalide");
@@ -121,40 +102,21 @@ function close() {
 
         <!-- OWNER controls -->
         <template v-if="isOwner">
-          <div class="mb-5">
-            <h5 class="mb-2 text-2sm font-bold">Générer une nouvelle licence</h5>
-            <p class="mb-3 text-2xs text-body">
-              Génère une clé unique à usage unique. Elle doit ensuite être activée ci-dessous pour démarrer les 30 jours d'accès.
+          <div v-if="license?.generatedUnactivatedKey" class="mb-5 rounded-lg border border-border p-3">
+            <p class="mb-2 text-2xs text-body">
+              Clé reçue de l'éditeur, en attente d'activation :
             </p>
-            <button
-              type="button"
-              class="rounded-full px-4 py-2 text-2sm font-bold disabled:cursor-not-allowed disabled:opacity-50"
-              :style="{ background: GOLD, color: NAVY }"
-              :disabled="generating"
-              @click="generate"
-            >
-              <i class="fa fa-key mr-1.5"></i>{{ generating ? "Génération..." : "Générer une licence" }}
-            </button>
-
-            <div
-              v-if="generatedKey || license?.generatedUnactivatedKey"
-              class="mt-3 rounded-lg border border-border p-3"
-            >
-              <p class="mb-2 text-2xs text-body">
-                Clé générée, en attente d'activation :
-              </p>
-              <div class="flex items-center gap-2">
-                <code class="flex-1 truncate rounded-lg bg-primarylight px-3 py-2 text-2sm font-bold text-primary">
-                  {{ generatedKey || license?.generatedUnactivatedKey }}
-                </code>
-                <button
-                  type="button"
-                  class="shrink-0 rounded-lg border border-border px-3 py-2 text-2sm hover:text-primary"
-                  @click="copyKey(generatedKey || license?.generatedUnactivatedKey || '')"
-                >
-                  <i class="fa" :class="copied ? 'fa-check' : 'fa-copy'"></i>
-                </button>
-              </div>
+            <div class="flex items-center gap-2">
+              <code class="flex-1 truncate rounded-lg bg-primarylight px-3 py-2 text-2sm font-bold text-primary">
+                {{ license.generatedUnactivatedKey }}
+              </code>
+              <button
+                type="button"
+                class="shrink-0 rounded-lg border border-border px-3 py-2 text-2sm hover:text-primary"
+                @click="copyKey(license.generatedUnactivatedKey || '')"
+              >
+                <i class="fa" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+              </button>
             </div>
           </div>
 
