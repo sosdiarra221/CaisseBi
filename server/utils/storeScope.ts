@@ -1,4 +1,5 @@
 import type { User } from "#auth-utils";
+import { prisma } from "./prisma";
 
 /**
  * Read-side store filter. OWNER (Direction) has no fixed store — they see
@@ -20,17 +21,23 @@ export function resolveStoreScope(user: User): { storeId?: number } {
 
 /**
  * Write-side store id — every row that carries a storeId (Product,
- * Category, CashRegister, Sale, Expense, InventorySession) needs exactly
- * one on create. OWNER must have an active store selected to create
- * anything (there's no such thing as a product belonging to "all
- * stores"); every other role always writes into their own store.
+ * Category, CashRegister, Sale, Expense, InventorySession, Article) needs
+ * exactly one on create. OWNER must have an active store selected to
+ * create anything (there's no such thing as a product belonging to "all
+ * stores") — *except* when the company only has one store, in which case
+ * there's nothing to actually choose (the switcher itself only renders
+ * once a company has more than one store, so requiring an explicit pick
+ * here would leave a single-store Direction account with no way to ever
+ * create anything). Every other role always writes into their own store.
  */
-export function resolveWriteStoreId(user: User): number {
+export async function resolveWriteStoreId(user: User): Promise<number> {
   if (user.role === "OWNER") {
-    if (!user.activeStoreId) {
-      throw createError({ statusCode: 400, statusMessage: "Sélectionnez d'abord un magasin" });
-    }
-    return user.activeStoreId;
+    if (user.activeStoreId) return user.activeStoreId;
+
+    const stores = await prisma.store.findMany({ where: { companyId: user.companyId, active: true }, select: { id: true } });
+    if (stores.length === 1) return stores[0].id;
+    if (stores.length === 0) throw createError({ statusCode: 400, statusMessage: "Aucun magasin actif pour cette entreprise" });
+    throw createError({ statusCode: 400, statusMessage: "Sélectionnez d'abord un magasin" });
   }
   if (!user.storeId) {
     throw createError({ statusCode: 403, statusMessage: "Aucun magasin assigné à ce compte" });

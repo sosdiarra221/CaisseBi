@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
   const expense = await prisma.expense.create({
     data: {
       companyId: user.companyId,
-      storeId: resolveWriteStoreId(user),
+      storeId: await resolveWriteStoreId(user),
       date: new Date(`${data.date}T00:00:00.000`),
       amount: data.amount,
       description: data.description || "",

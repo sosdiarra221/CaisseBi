@@ -22,6 +22,6 @@ export default defineEventHandler(async (event) => {
   const data = await readValidatedBody(event, bodySchema.parse);
 
   return prisma.product.create({
-    data: { ...data, companyId: user.companyId, storeId: resolveWriteStoreId(user) },
+    data: { ...data, companyId: user.companyId, storeId: await resolveWriteStoreId(user) },
   });
 });

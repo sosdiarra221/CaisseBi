@@ -24,12 +24,13 @@ export default defineEventHandler(async (event) => {
     where: { id: { in: productIds }, companyId: user.companyId, ...resolveStoreScope(user) },
   });
   const productMap = new Map(products.map((p) => [p.id, p]));
+  const storeId = await resolveWriteStoreId(user);
 
   const session = await prisma.$transaction(async (tx) => {
     const inventorySession = await tx.inventorySession.create({
       data: {
         companyId: user.companyId,
-        storeId: resolveWriteStoreId(user),
+        storeId,
         userId: user.id,
         status: "VALIDATED",
         validatedAt: new Date(),
