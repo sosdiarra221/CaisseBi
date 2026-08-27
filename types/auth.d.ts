@@ -12,6 +12,9 @@ declare module "#auth-utils" {
     // (see server/api/stores/switch.post.ts). Null/undefined = the
     // aggregate "all stores" view.
     activeStoreId?: number | null;
+    // Per-account UI language ("fr" | "ar") — see
+    // server/api/auth/locale.post.ts and plugins/locale.client.ts.
+    locale: string;
   }
 }
 

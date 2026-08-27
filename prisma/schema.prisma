@@ -88,6 +88,10 @@ model User {
   username  String   @unique
   password  String
   pinCode   String?
+  // Per-account UI language ("fr" or "ar") — see server/api/auth/locale.post.ts
+  // and Header2.vue's language switcher. Not company-wide: two staff on the
+  // same account can each pick their own.
+  locale    String   @default("fr")
   role      Role     @default(CASHIER)
   active    Boolean  @default(true)
   createdAt DateTime @default(now())

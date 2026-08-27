@@ -1,0 +1,103 @@
+{
+  "common": {
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "close": "إغلاق",
+    "logout": "تسجيل الخروج",
+    "lock": "قفل"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "pos": "نقطة البيع",
+    "produits": "المنتجات",
+    "categories": "الفئات",
+    "stock": "المخزون",
+    "stockOverview": "نظرة عامة",
+    "stockMovement": "حركة المخزون",
+    "inventory": "الجرد",
+    "articles": "المواد",
+    "articlesList": "قائمة المواد",
+    "articlesMovement": "حركة المواد",
+    "magasins": "المتاجر",
+    "caisse": "الصندوق",
+    "ventes": "المبيعات",
+    "depenses": "المصاريف",
+    "rapports": "التقارير",
+    "comptabilite": "المحاسبة",
+    "utilisateurs": "المستخدمون",
+    "roles": "الأدوار والصلاحيات",
+    "parametres": "الإعدادات"
+  },
+  "sidebar": {
+    "needHelp": "بحاجة إلى مساعدة؟",
+    "contactSupport": "اتصل بالدعم",
+    "support": "الدعم",
+    "viewDocs": "عرض الوثائق",
+    "editor": "Pene Corporation — الشركة المطورة للبرنامج",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "designedBy": "تصميم Gora Pene"
+  },
+  "header": {
+    "searchPlaceholder": "ابحث عن عملية بيع أو منتج أو عميل...",
+    "toggleMenu": "طيّ/توسيع القائمة",
+    "fullscreen": "ملء الشاشة",
+    "exitFullscreen": "الخروج من ملء الشاشة"
+  },
+  "language": {
+    "label": "اللغة",
+    "fr": "Français",
+    "ar": "العربية"
+  },
+  "login": {
+    "title": "تسجيل الدخول",
+    "subtitle": "سجّل الدخول للوصول إلى صندوقك",
+    "identifier": "المعرّف",
+    "pin": "رمز PIN",
+    "submit": "تسجيل الدخول",
+    "submitting": "جارٍ تسجيل الدخول...",
+    "genericError": "تعذّر تسجيل الدخول",
+    "tagline": "CaisseBi — الصندوق البسيط والسريع والموثوق لمتجرك."
+  },
+  "pos": {
+    "searchPlaceholder": "ابحث عن منتج أو امسح الباركود...",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "dashboard": "لوحة التحكم",
+    "noRegisterOpen": "لا يوجد صندوق مفتوح",
+    "closeCashRegister": "إغلاق الصندوق",
+    "gridView": "عرض الشبكة",
+    "listView": "عرض القائمة",
+    "paymentError": "خطأ أثناء الدفع",
+    "noProductFound": "لم يتم العثور على أي منتج."
+  },
+  "payment": {
+    "title": "الدفع",
+    "subtitle": "إتمام الطلب",
+    "totalToPay": "المبلغ الإجمالي المستحق",
+    "amountGiven": "المبلغ المدفوع",
+    "paymentMethod": "طريقة الدفع",
+    "paymentDetail": "تفاصيل الدفع",
+    "amountToPay": "المبلغ المستحق",
+    "changeToGive": "الباقي",
+    "cash": "نقداً",
+    "wave": "Wave",
+    "orangeMoney": "Orange Money",
+    "card": "بطاقة مصرفية",
+    "validating": "جارٍ التحقق...",
+    "checkout": "تحصيل"
+  },
+  "receipt": {
+    "ticketTitle": "إيصال الشراء",
+    "ticketNumber": "رقم الإيصال",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "article": "المادة",
+    "qty": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "total": "المجموع",
+    "totalToPay": "المبلغ الإجمالي المستحق",
+    "paymentMethod": "طريقة الدفع",
+    "thanks": "شكراً لثقتكم!",
+    "alwaysAtService": "دائماً في خدمتكم"
+  }
+}

@@ -4,8 +4,22 @@ const NAVY = "#182B6B";
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  modules: ["nuxt-auth-utils", "@vite-pwa/nuxt"],
+  modules: ["nuxt-auth-utils", "@vite-pwa/nuxt", "@nuxtjs/i18n"],
   // css: ["~/assets/css/common.css", "~/assets/css/style.css"],
+  // Français is still the default for everyone; Arabic is opt-in per
+  // account (see server/api/auth/locale.post.ts + components/Header2.vue's
+  // language switcher). "no_prefix" keeps the existing URLs unchanged
+  // (no /ar/... routes) — this is a per-user text preference, not a
+  // separate localized site.
+  i18n: {
+    locales: [
+      { code: "fr", iso: "fr-FR", file: "fr.json", name: "Français" },
+      { code: "ar", iso: "ar-SA", file: "ar.json", name: "العربية" },
+    ],
+    defaultLocale: "fr",
+    strategy: "no_prefix",
+    langDir: "locales",
+  },
   runtimeConfig: {
     // Declaring the key (even empty) is what makes Nuxt pick up the
     // NUXT_PUBLIC_FIREBASE_VAPID_KEY env var and expose it to the client —

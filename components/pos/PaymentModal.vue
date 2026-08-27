@@ -11,6 +11,7 @@ const emit = defineEmits<{
   close: [];
 }>();
 
+const { t } = useI18n();
 const { playTap } = useClickSound();
 
 // Payment-method icon badges for the POS payment modal. Cash/Card keep the
@@ -24,12 +25,12 @@ const { playTap } = useClickSound();
 const ICON_CASH = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#2FB344"/><rect x="18" y="34" width="64" height="36" rx="6" fill="white" fill-opacity="0.15"/><rect x="18" y="34" width="64" height="36" rx="6" stroke="white" stroke-width="4"/><circle cx="50" cy="52" r="10" stroke="white" stroke-width="4"/><path d="M28 42v20M72 42v20" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>`;
 const ICON_CARD = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="22" fill="#182B6B"/><rect x="16" y="30" width="68" height="44" rx="7" stroke="white" stroke-width="4"/><path d="M16 44h68" stroke="white" stroke-width="4"/><rect x="24" y="56" width="18" height="7" rx="2" fill="white"/></svg>`;
 
-const methods: { value: "CASH" | "WAVE" | "ORANGE_MONEY" | "CARD"; label: string; iconSvg?: string }[] = [
-  { value: "CASH", label: "Espèces", iconSvg: ICON_CASH },
-  { value: "WAVE", label: "Wave" },
-  { value: "ORANGE_MONEY", label: "Orange Money" },
-  { value: "CARD", label: "Carte bancaire", iconSvg: ICON_CARD },
-];
+const methods = computed<{ value: "CASH" | "WAVE" | "ORANGE_MONEY" | "CARD"; label: string; iconSvg?: string }[]>(() => [
+  { value: "CASH", label: t("payment.cash"), iconSvg: ICON_CASH },
+  { value: "WAVE", label: t("payment.wave") },
+  { value: "ORANGE_MONEY", label: t("payment.orangeMoney") },
+  { value: "CARD", label: t("payment.card"), iconSvg: ICON_CARD },
+]);
 
 const method = ref<"CASH" | "WAVE" | "ORANGE_MONEY" | "CARD">(props.initialMethod);
 const receivedInput = ref<string>(String(props.total));
@@ -78,8 +79,8 @@ function confirm() {
             <i class="fa fa-wallet"></i>
           </span>
           <div>
-            <p class="font-bold leading-tight">Paiement</p>
-            <p class="text-2xs text-white/80">Finaliser la commande</p>
+            <p class="font-bold leading-tight">{{ t("payment.title") }}</p>
+            <p class="text-2xs text-white/80">{{ t("payment.subtitle") }}</p>
           </div>
         </div>
         <button type="button" class="flex size-9 shrink-0 items-center justify-center text-2xl leading-none text-white/90 hover:text-white" @click="emit('close')">
@@ -90,11 +91,11 @@ function confirm() {
       <div class="grid min-h-0 flex-1 grid-cols-1 gap-5 overflow-y-auto p-6 sm:grid-cols-2">
         <div class="sm:col-span-2 flex flex-wrap items-end justify-between gap-4 rounded-xl bg-bodybg px-4 py-3.5">
           <div>
-            <p class="text-2xs text-body">Total à payer</p>
+            <p class="text-2xs text-body">{{ t("payment.totalToPay") }}</p>
             <p class="text-2xl font-bold text-primary">{{ formatAmount(total) }} {{ currency }}</p>
           </div>
           <div class="min-w-[160px]">
-            <label class="mb-1 block text-2xs text-body">Montant donné</label>
+            <label class="mb-1 block text-2xs text-body">{{ t("payment.amountGiven") }}</label>
             <div class="flex h-10 items-center rounded-lg border border-border bg-card px-3">
               <input
                 :value="receivedInput"
@@ -107,7 +108,7 @@ function confirm() {
         </div>
 
         <div>
-          <p class="mb-2 text-2xs font-semibold uppercase text-body">Mode de paiement</p>
+          <p class="mb-2 text-2xs font-semibold uppercase text-body">{{ t("payment.paymentMethod") }}</p>
           <div class="flex flex-col gap-2">
             <button
               v-for="m in methods"
@@ -145,18 +146,18 @@ function confirm() {
         </div>
 
         <div>
-          <p class="mb-2 text-2xs font-semibold uppercase text-body">Détail du paiement</p>
+          <p class="mb-2 text-2xs font-semibold uppercase text-body">{{ t("payment.paymentDetail") }}</p>
           <div class="mb-3 rounded-xl border border-border p-3.5 text-2sm">
             <div class="flex justify-between py-1">
-              <span class="text-body">Montant à payer</span>
+              <span class="text-body">{{ t("payment.amountToPay") }}</span>
               <span class="font-semibold">{{ formatAmount(total) }} {{ currency }}</span>
             </div>
             <div class="flex justify-between py-1">
-              <span class="text-body">Montant donné</span>
+              <span class="text-body">{{ t("payment.amountGiven") }}</span>
               <span class="font-semibold">{{ formatAmount(received) }} {{ currency }}</span>
             </div>
             <div class="flex justify-between border-t border-border py-1.5 mt-1">
-              <span class="font-semibold">Monnaie à rendre</span>
+              <span class="font-semibold">{{ t("payment.changeToGive") }}</span>
               <span class="font-bold" :class="method === 'CASH' ? 'text-success' : 'text-body'">
                 {{ formatAmount(change) }} {{ currency }}
               </span>
@@ -193,7 +194,7 @@ function confirm() {
           :disabled="!canValidate || loading"
           @click="confirm"
         >
-          <i class="fa fa-print mr-1.5"></i>{{ loading ? "Validation..." : "Encaisser" }}
+          <i class="fa fa-print mr-1.5"></i>{{ loading ? t("payment.validating") : t("payment.checkout") }}
         </button>
       </div>
     </div>

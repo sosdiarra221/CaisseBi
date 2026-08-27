@@ -3,7 +3,8 @@ import { productAvatar } from "~/lib/avatar";
 import { Store } from "~/store/Store";
 
 const { toggleMenu, viewportWidth, mobileNavOpen } = Store;
-const { user, clear: clearSession } = useUserSession();
+const { user, clear: clearSession, fetch: refreshSession } = useUserSession();
+const { t, locale } = useI18n();
 
 const NAVY = "#182B6B";
 const GOLD = "#F5A524";
@@ -98,6 +99,22 @@ async function logout() {
     await navigateTo("/login");
   }
 }
+
+// Per-account language — updates the DB (server/api/auth/locale.post.ts)
+// and the session in one call; plugins/locale.ts then applies it via
+// setLocale as soon as user.locale changes, so nothing extra is needed
+// here beyond the request itself.
+const switchingLocale = ref(false);
+async function switchLocale(next: "fr" | "ar") {
+  if (locale.value === next || switchingLocale.value) return;
+  switchingLocale.value = true;
+  try {
+    await $fetch("/api/auth/locale", { method: "POST", body: { locale: next } });
+    await refreshSession();
+  } finally {
+    switchingLocale.value = false;
+  }
+}
 </script>
 
 <template>
@@ -125,7 +142,7 @@ async function logout() {
             type="button"
             class="flex size-10 shrink-0 items-center justify-center rounded-xl text-lg hover:bg-black/5"
             :style="{ color: NAVY }"
-            title="Réduire/agrandir le menu"
+            :title="t('header.toggleMenu')"
             @click="onHamburgerClick"
           >
             <i class="fa fa-bars"></i>
@@ -138,7 +155,7 @@ async function logout() {
           <input
             type="text"
             class="h-11 w-full rounded-full border-0 bg-[#F5F7FB] pl-10 pr-4 text-2sm focus:outline-none focus:ring-2"
-            placeholder="Rechercher une vente, un produit, un client..."
+            :placeholder="t('header.searchPlaceholder')"
             :style="{ '--tw-ring-color': GOLD } as any"
           />
         </div>
@@ -252,7 +269,7 @@ async function logout() {
           type="button"
           class="hidden size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 sm:flex"
           :style="{ color: NAVY }"
-          :title="isFullscreen ? 'Quitter le plein écran' : 'Plein écran'"
+          :title="isFullscreen ? t('header.exitFullscreen') : t('header.fullscreen')"
           @click="toggleFullscreen"
         >
           <i class="fa" :class="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
@@ -274,10 +291,35 @@ async function logout() {
               <p class="text-2xs text-body">{{ user?.email }}</p>
             </div>
             <NuxtLink v-if="user?.role !== 'CASHIER'" to="/parametres" class="flex items-center gap-2.5 px-4 py-2.5 text-2sm hover:bg-[#F5F7FB]">
-              <i class="fa fa-gear" :style="{ color: NAVY }"></i>Paramètres
+              <i class="fa fa-gear" :style="{ color: NAVY }"></i>{{ t("nav.parametres") }}
             </NuxtLink>
-            <button type="button" class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-2sm text-danger hover:bg-dangerlight" @click="logout">
-              <i class="fa fa-right-from-bracket"></i>Déconnexion
+            <div class="flex items-center justify-between gap-2 border-t border-border px-4 py-2.5 text-2sm">
+              <span class="flex items-center gap-2.5">
+                <i class="fa fa-language" :style="{ color: NAVY }"></i>{{ t("language.label") }}
+              </span>
+              <div class="flex overflow-hidden rounded-lg border border-border text-2xs font-semibold">
+                <button
+                  type="button"
+                  class="px-2.5 py-1"
+                  :style="locale === 'fr' ? { background: NAVY, color: '#fff' } : {}"
+                  :disabled="switchingLocale"
+                  @click="switchLocale('fr')"
+                >
+                  FR
+                </button>
+                <button
+                  type="button"
+                  class="px-2.5 py-1"
+                  :style="locale === 'ar' ? { background: NAVY, color: '#fff' } : {}"
+                  :disabled="switchingLocale"
+                  @click="switchLocale('ar')"
+                >
+                  AR
+                </button>
+              </div>
+            </div>
+            <button type="button" class="flex w-full items-center gap-2.5 border-t border-border px-4 py-2.5 text-left text-2sm text-danger hover:bg-dangerlight" @click="logout">
+              <i class="fa fa-right-from-bracket"></i>{{ t("common.logout") }}
             </button>
           </div>
         </div>

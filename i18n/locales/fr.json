@@ -1,0 +1,103 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "close": "Fermer",
+    "logout": "Déconnexion",
+    "lock": "Verrouiller"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "pos": "POS",
+    "produits": "Produits",
+    "categories": "Catégories",
+    "stock": "Stock",
+    "stockOverview": "Vue d'ensemble",
+    "stockMovement": "Mouvement de stock",
+    "inventory": "Inventaire",
+    "articles": "Articles",
+    "articlesList": "Liste des articles",
+    "articlesMovement": "Mouvement d'articles",
+    "magasins": "Magasins",
+    "caisse": "Caisse",
+    "ventes": "Ventes",
+    "depenses": "Dépenses",
+    "rapports": "Rapports",
+    "comptabilite": "Comptabilité",
+    "utilisateurs": "Utilisateurs",
+    "roles": "Rôles & permissions",
+    "parametres": "Paramètres"
+  },
+  "sidebar": {
+    "needHelp": "Besoin d'aide ?",
+    "contactSupport": "Contactez le support",
+    "support": "Support",
+    "viewDocs": "Voir la documentation",
+    "editor": "Pene Corporation — éditeur de logiciel",
+    "phone": "Téléphone",
+    "email": "Email",
+    "designedBy": "Une conception de Gora Pene"
+  },
+  "header": {
+    "searchPlaceholder": "Rechercher une vente, un produit, un client...",
+    "toggleMenu": "Réduire/agrandir le menu",
+    "fullscreen": "Plein écran",
+    "exitFullscreen": "Quitter le plein écran"
+  },
+  "language": {
+    "label": "Langue",
+    "fr": "Français",
+    "ar": "العربية"
+  },
+  "login": {
+    "title": "Connexion",
+    "subtitle": "Connectez-vous pour accéder à votre caisse",
+    "identifier": "Identifiant",
+    "pin": "Code PIN",
+    "submit": "Se connecter",
+    "submitting": "Connexion...",
+    "genericError": "Connexion impossible",
+    "tagline": "CaisseBi — la caisse simple, rapide et fiable pour votre commerce."
+  },
+  "pos": {
+    "searchPlaceholder": "Rechercher un produit ou scanner un code-barres...",
+    "backToDashboard": "Retour au tableau de bord",
+    "dashboard": "Tableau de bord",
+    "noRegisterOpen": "Aucune caisse ouverte",
+    "closeCashRegister": "Fermer la caisse",
+    "gridView": "Vue grille",
+    "listView": "Vue liste",
+    "paymentError": "Erreur lors du paiement",
+    "noProductFound": "Aucun produit trouvé."
+  },
+  "payment": {
+    "title": "Paiement",
+    "subtitle": "Finaliser la commande",
+    "totalToPay": "Total à payer",
+    "amountGiven": "Montant donné",
+    "paymentMethod": "Mode de paiement",
+    "paymentDetail": "Détail du paiement",
+    "amountToPay": "Montant à payer",
+    "changeToGive": "Monnaie à rendre",
+    "cash": "Espèces",
+    "wave": "Wave",
+    "orangeMoney": "Orange Money",
+    "card": "Carte bancaire",
+    "validating": "Validation...",
+    "checkout": "Encaisser"
+  },
+  "receipt": {
+    "ticketTitle": "TICKET DE CAISSE",
+    "ticketNumber": "N° Ticket",
+    "date": "Date",
+    "time": "Heure",
+    "article": "Article",
+    "qty": "Qté",
+    "unitPrice": "P.U.",
+    "total": "Total",
+    "totalToPay": "Total à payer",
+    "paymentMethod": "MODE DE PAIEMENT",
+    "thanks": "Merci pour votre confiance !",
+    "alwaysAtService": "toujours à votre service"
+  }
+}

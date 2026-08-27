@@ -33,15 +33,17 @@ const props = defineProps<{
   screenHidden?: boolean;
 }>();
 
+const { t } = useI18n();
+
 const NAVY = "#182B6B";
 const GOLD = "#F5A524";
 
-const PAYMENT_OPTIONS = [
-  { method: "CASH", label: "Espèces", icon: "fa-money-bill-wave" },
-  { method: "WAVE", label: "Wave", icon: "fa-mobile-screen-button" },
-  { method: "ORANGE_MONEY", label: "Orange Money", icon: "fa-mobile-screen-button" },
-  { method: "CARD", label: "Carte bancaire", icon: "fa-credit-card" },
-];
+const PAYMENT_OPTIONS = computed(() => [
+  { method: "CASH", label: t("payment.cash"), icon: "fa-money-bill-wave" },
+  { method: "WAVE", label: t("payment.wave"), icon: "fa-mobile-screen-button" },
+  { method: "ORANGE_MONEY", label: t("payment.orangeMoney"), icon: "fa-mobile-screen-button" },
+  { method: "CARD", label: t("payment.card"), icon: "fa-credit-card" },
+]);
 
 const usedMethods = computed(() => new Set(props.sale.payments.map((p) => p.method)));
 
@@ -110,7 +112,7 @@ useHead(() => ({
 
     <!-- Banner -->
     <div class="mx-4 mb-3 mt-2 rounded-lg py-1.5 text-center font-extrabold tracking-wide text-white" :style="{ background: NAVY, fontSize: isNarrow ? '11px' : '13px' }">
-      TICKET DE CAISSE
+      {{ t("receipt.ticketTitle") }}
     </div>
 
     <!-- Company / ticket info -->
@@ -127,9 +129,9 @@ useHead(() => ({
         </p>
       </div>
       <div class="flex-1 space-y-1 border-l pl-2" style="border-color: #d8dcec">
-        <p><span class="font-semibold">N° Ticket :</span> #{{ String(sale.number).padStart(6, "0") }}</p>
-        <p><span class="font-semibold">Date :</span> {{ formatDate(saleDate) }}</p>
-        <p><span class="font-semibold">Heure :</span> {{ saleDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) }}</p>
+        <p><span class="font-semibold">{{ t("receipt.ticketNumber") }} :</span> #{{ String(sale.number).padStart(6, "0") }}</p>
+        <p><span class="font-semibold">{{ t("receipt.date") }} :</span> {{ formatDate(saleDate) }}</p>
+        <p><span class="font-semibold">{{ t("receipt.time") }} :</span> {{ saleDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) }}</p>
       </div>
     </div>
 
@@ -137,10 +139,10 @@ useHead(() => ({
     <table class="w-full px-4" style="border-collapse: collapse">
       <thead>
         <tr :style="{ background: NAVY }" class="text-white">
-          <th class="py-1.5 pl-4 text-left font-semibold">Article</th>
-          <th class="py-1.5 text-center font-semibold">Qté</th>
-          <th class="py-1.5 text-right font-semibold">P.U.</th>
-          <th class="py-1.5 pr-4 text-right font-semibold">Total</th>
+          <th class="py-1.5 pl-4 text-left font-semibold">{{ t("receipt.article") }}</th>
+          <th class="py-1.5 text-center font-semibold">{{ t("receipt.qty") }}</th>
+          <th class="py-1.5 text-right font-semibold">{{ t("receipt.unitPrice") }}</th>
+          <th class="py-1.5 pr-4 text-right font-semibold">{{ t("receipt.total") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -155,7 +157,7 @@ useHead(() => ({
 
     <!-- Total -->
     <div class="mx-4 my-3 flex items-center justify-between rounded-lg px-3 py-2" style="background: #eaf1fb">
-      <span class="font-bold" :style="{ color: NAVY }">Total à payer</span>
+      <span class="font-bold" :style="{ color: NAVY }">{{ t("receipt.totalToPay") }}</span>
       <span class="font-extrabold" :style="{ color: NAVY, fontSize: isNarrow ? '13px' : '15px' }">
         {{ formatAmount(sale.total) }} {{ company.currency }}
       </span>
@@ -165,7 +167,7 @@ useHead(() => ({
     <div class="mx-4 mb-2 flex items-center gap-2">
       <span class="h-px flex-1" style="background: #d8dcec"></span>
       <span class="shrink-0 rounded-full px-3 py-1 font-bold text-white" :style="{ background: NAVY, fontSize: isNarrow ? '9px' : '10px' }">
-        MODE DE PAIEMENT
+        {{ t("receipt.paymentMethod") }}
       </span>
       <span class="h-px flex-1" style="background: #d8dcec"></span>
     </div>
@@ -193,14 +195,14 @@ useHead(() => ({
     <!-- Footer -->
     <div class="px-4 pb-4 text-center">
       <p class="mb-2 font-bold italic" :style="{ color: NAVY }">
-        {{ company.receiptFooter || "Merci pour votre confiance !" }}
+        {{ company.receiptFooter || t("receipt.thanks") }}
       </p>
       <div class="mb-2 flex items-center gap-2">
         <span class="h-px flex-1" style="background: #d8dcec"></span>
         <i class="fa fa-handshake" :style="{ color: GOLD }"></i>
         <span class="h-px flex-1" style="background: #d8dcec"></span>
       </div>
-      <p class="font-semibold" :style="{ color: NAVY }">{{ company.name }} – toujours à votre service</p>
+      <p class="font-semibold" :style="{ color: NAVY }">{{ company.name }} – {{ t("receipt.alwaysAtService") }}</p>
     </div>
   </div>
 </template>

@@ -23,6 +23,7 @@
     "@fullcalendar/vue3": "^6.1.15",
     "@headlessui/vue": "^1.7.23",
     "@nuxt/ui": "^2.18.7",
+    "@nuxtjs/i18n": "^9.5.6",
     "@prisma/adapter-mariadb": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@simonwep/pickr": "^1.9.1",

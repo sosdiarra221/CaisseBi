@@ -13,6 +13,7 @@ import { Store } from "~/store/Store";
 const { toggleMenu, viewportWidth, mobileNavOpen } = Store;
 const route = useRoute();
 const { user } = useUserSession();
+const { t } = useI18n();
 
 const NAVY = "#182B6B";
 const NAVY_LIGHT = "#24358C";
@@ -66,6 +67,38 @@ const LABEL_OVERRIDES: Record<string, string> = {
   Dashboard: "Tableau de bord",
 };
 
+// lib/menu.ts's `lable` strings stay hardcoded French — they're also used
+// as lookup keys into ICONS/LABEL_OVERRIDES above, so renaming them would
+// ripple everywhere. This maps that same French string to an i18n key,
+// translated only at render time here, so Arabic-speaking accounts (see
+// plugins/locale.ts) see a translated sidebar without touching menu.ts.
+const I18N_KEYS: Record<string, string> = {
+  "Tableau de bord": "nav.dashboard",
+  POS: "nav.pos",
+  Produits: "nav.produits",
+  Catégories: "nav.categories",
+  Stock: "nav.stock",
+  "Vue d'ensemble": "nav.stockOverview",
+  "Mouvement de stock": "nav.stockMovement",
+  Inventaire: "nav.inventory",
+  Articles: "nav.articles",
+  "Liste des articles": "nav.articlesList",
+  "Mouvement d'articles": "nav.articlesMovement",
+  Magasins: "nav.magasins",
+  Caisse: "nav.caisse",
+  Ventes: "nav.ventes",
+  Dépenses: "nav.depenses",
+  Rapports: "nav.rapports",
+  Comptabilité: "nav.comptabilite",
+  Utilisateurs: "nav.utilisateurs",
+  "Rôles & permissions": "nav.roles",
+  Paramètres: "nav.parametres",
+};
+function navLabel(label: string): string {
+  const key = I18N_KEYS[label];
+  return key ? t(key) : label;
+}
+
 interface NavLinkRow {
   type: "link";
   key: string;
@@ -108,13 +141,13 @@ const navRows = computed<NavRow[]>(() => {
           rows.push({
             type: "group",
             key: `group:${sub.lable}`,
-            label: LABEL_OVERRIDES[sub.lable] ?? sub.lable,
+            label: navLabel(LABEL_OVERRIDES[sub.lable] ?? sub.lable),
             icon: ICONS[sub.lable] ?? "fa-circle",
             children: sub.childer
               .filter((c) => c.link)
               .map((c) => ({
                 key: c.link as string,
-                label: LABEL_OVERRIDES[c.lable] ?? c.lable,
+                label: navLabel(LABEL_OVERRIDES[c.lable] ?? c.lable),
                 link: c.link as string,
                 icon: ICONS[c.lable] ?? "fa-circle",
               })),
@@ -123,7 +156,7 @@ const navRows = computed<NavRow[]>(() => {
           rows.push({
             type: "link",
             key: sub.link,
-            label: LABEL_OVERRIDES[sub.lable] ?? sub.lable,
+            label: navLabel(LABEL_OVERRIDES[sub.lable] ?? sub.lable),
             link: sub.link,
             icon: ICONS[sub.lable] ?? "fa-circle",
           });
@@ -133,7 +166,7 @@ const navRows = computed<NavRow[]>(() => {
       rows.push({
         type: "link",
         key: item.link,
-        label: LABEL_OVERRIDES[item.lable] ?? item.lable,
+        label: navLabel(LABEL_OVERRIDES[item.lable] ?? item.lable),
         link: item.link,
         icon: ICONS[item.lable] ?? "fa-circle",
       });
@@ -311,15 +344,15 @@ function onGroupClick(row: NavGroupRow) {
           >
             <i class="fa fa-headset"></i>
           </div>
-          <p class="text-2sm font-bold text-white">Besoin d'aide ?</p>
-          <p class="mb-3 text-2xs text-white/60">Contactez le support</p>
+          <p class="text-2sm font-bold text-white">{{ t("sidebar.needHelp") }}</p>
+          <p class="mb-3 text-2xs text-white/60">{{ t("sidebar.contactSupport") }}</p>
           <button
             type="button"
             class="inline-block w-full rounded-full py-1.5 text-2xs font-bold"
             :style="{ background: GOLD, color: NAVY }"
             @click="showSupport = true"
           >
-            Support
+            {{ t("sidebar.support") }}
           </button>
         </div>
       </div>
@@ -343,7 +376,7 @@ function onGroupClick(row: NavGroupRow) {
             >
               <i class="fa fa-headset text-2xl"></i>
             </span>
-            <h4 class="text-base font-bold" :style="{ color: NAVY }">Besoin d'aide ?</h4>
+            <h4 class="text-base font-bold" :style="{ color: NAVY }">{{ t("sidebar.needHelp") }}</h4>
             <p class="text-2sm text-body">Consultez la documentation ou contactez l'éditeur</p>
           </div>
 
@@ -353,29 +386,29 @@ function onGroupClick(row: NavGroupRow) {
             :style="{ background: NAVY }"
             @click="showSupport = false"
           >
-            <i class="fa fa-book"></i>Voir la documentation
+            <i class="fa fa-book"></i>{{ t("sidebar.viewDocs") }}
           </NuxtLink>
 
           <div class="rounded-xl p-4" style="background: #F5F7FB">
             <p class="mb-1.5 font-bold" :style="{ color: NAVY }">
-              <i class="fa fa-building mr-1.5"></i>Pene Corporation — éditeur de logiciel
+              <i class="fa fa-building mr-1.5"></i>{{ t("sidebar.editor") }}
             </p>
             <p class="mb-1 text-2sm">
-              <i class="fa fa-phone mr-1.5" :style="{ color: GOLD }"></i>Téléphone : <strong>+221 78 179 17 90</strong>
+              <i class="fa fa-phone mr-1.5" :style="{ color: GOLD }"></i>{{ t("sidebar.phone") }} : <strong>+221 78 179 17 90</strong>
             </p>
             <p class="text-2sm">
-              <i class="fa fa-envelope mr-1.5" :style="{ color: GOLD }"></i>Email : <strong>contact@gorapene.com</strong>
+              <i class="fa fa-envelope mr-1.5" :style="{ color: GOLD }"></i>{{ t("sidebar.email") }} : <strong>contact@gorapene.com</strong>
             </p>
           </div>
 
-          <p class="mt-4 text-center text-2xs text-body/70">Une conception de Gora Pene</p>
+          <p class="mt-4 text-center text-2xs text-body/70">{{ t("sidebar.designedBy") }}</p>
 
           <button
             type="button"
             class="btn mt-4 w-full border border-border"
             @click="showSupport = false"
           >
-            Fermer
+            {{ t("common.close") }}
           </button>
         </div>
       </Transition>

@@ -43,6 +43,7 @@ export default defineEventHandler(async (event) => {
       companyId: user.companyId,
       storeId: user.storeId,
       activeStoreId: null,
+      locale: user.locale,
     },
   });
 

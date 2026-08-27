@@ -5,6 +5,7 @@ definePageMeta({ layout: "pos" });
 
 const { user, clear: clearSession } = useUserSession();
 const route = useRoute();
+const { t } = useI18n();
 const { lines, addProduct, itemCount, total, clear } = useCart();
 const { playSuccess } = useClickSound();
 
@@ -97,7 +98,7 @@ async function confirmPayment(payload: { method: "CASH" | "CARD" | "WAVE" | "ORA
     clear();
     await refreshProducts();
   } catch (e: any) {
-    errorMessage.value = e?.data?.statusMessage || "Erreur lors du paiement";
+    errorMessage.value = e?.data?.statusMessage || t("pos.paymentError");
   } finally {
     paying.value = false;
   }
@@ -156,7 +157,7 @@ function lockScreen() {
         <span class="flex size-9 items-center justify-center rounded-xl bg-primary text-lg text-white">🧾</span>
         <span class="max-sm:hidden leading-tight">
           <span class="block text-base font-extrabold">CaisseBi</span>
-          <span class="block text-2xs text-body">{{ cashSession?.cashRegister?.name ?? "Aucune caisse ouverte" }}</span>
+          <span class="block text-2xs text-body">{{ cashSession?.cashRegister?.name ?? t("pos.noRegisterOpen") }}</span>
         </span>
       </NuxtLink>
 
@@ -165,7 +166,7 @@ function lockScreen() {
         <input
           v-model="search"
           type="search"
-          placeholder="Rechercher un produit ou scanner un code-barres..."
+          :placeholder="t('pos.searchPlaceholder')"
           class="h-10 w-full rounded-full border border-border bg-bodybg pl-9 pr-3 focus:border-primary"
           @keyup.enter="onSearchEnter"
         />
@@ -174,10 +175,10 @@ function lockScreen() {
       <NuxtLink
         to="/"
         class="flex shrink-0 items-center gap-2 rounded-full border border-border px-3.5 py-2 text-2sm font-semibold hover:border-primary"
-        title="Retour au tableau de bord"
+        :title="t('pos.backToDashboard')"
       >
         <i class="fa fa-table-columns"></i>
-        <span class="max-sm:hidden">Tableau de bord</span>
+        <span class="max-sm:hidden">{{ t("pos.dashboard") }}</span>
       </NuxtLink>
 
       <div class="relative shrink-0">
@@ -204,21 +205,21 @@ function lockScreen() {
             class="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left hover:bg-bodybg"
             @click="showCloseSession = true; showUserMenu = false"
           >
-            <i class="fa fa-cash-register text-body"></i> Fermer la caisse
+            <i class="fa fa-cash-register text-body"></i> {{ t("pos.closeCashRegister") }}
           </button>
           <button
             type="button"
             class="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left hover:bg-bodybg"
             @click="lockScreen"
           >
-            <i class="fa fa-lock text-body"></i> Verrouiller
+            <i class="fa fa-lock text-body"></i> {{ t("common.lock") }}
           </button>
           <button
             type="button"
             class="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-danger hover:bg-dangerlight"
             @click="logout"
           >
-            <i class="fa fa-sign-out-alt"></i> Déconnexion
+            <i class="fa fa-sign-out-alt"></i> {{ t("common.logout") }}
           </button>
         </div>
       </div>
@@ -243,7 +244,7 @@ function lockScreen() {
           type="button"
           class="flex size-8 items-center justify-center rounded-lg"
           :class="viewMode === 'grid' ? 'bg-primary text-white' : 'bg-primarylight text-primary'"
-          title="Vue grille"
+          :title="t('pos.gridView')"
           @click="viewMode = 'grid'"
         >
           <i class="fa fa-th-large text-2xs"></i>
@@ -252,7 +253,7 @@ function lockScreen() {
           type="button"
           class="flex size-8 items-center justify-center rounded-lg"
           :class="viewMode === 'list' ? 'bg-primary text-white' : 'bg-primarylight text-primary'"
-          title="Vue liste"
+          :title="t('pos.listView')"
           @click="viewMode = 'list'"
         >
           <i class="fa fa-list text-2xs"></i>

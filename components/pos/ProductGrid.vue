@@ -18,6 +18,7 @@ defineProps<{
 }>();
 const emit = defineEmits<{ select: [product: any] }>();
 
+const { t } = useI18n();
 const { playAdd } = useClickSound();
 const pulsing = ref<number | null>(null);
 
@@ -72,7 +73,7 @@ function handleSelect(product: any) {
       </div>
     </button>
 
-    <p v-if="!products.length" class="col-span-full py-10 text-center text-body">Aucun produit trouvé.</p>
+    <p v-if="!products.length" class="col-span-full py-10 text-center text-body">{{ t("pos.noProductFound") }}</p>
   </div>
 
   <div v-else class="flex flex-col gap-2 p-4">
@@ -105,6 +106,6 @@ function handleSelect(product: any) {
       </span>
     </button>
 
-    <p v-if="!products.length" class="py-10 text-center text-body">Aucun produit trouvé.</p>
+    <p v-if="!products.length" class="py-10 text-center text-body">{{ t("pos.noProductFound") }}</p>
   </div>
 </template>
