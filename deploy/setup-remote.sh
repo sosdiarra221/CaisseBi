@@ -5,22 +5,32 @@
 # build) automatically every time you push. Run this once per environment,
 # after you've created the Node.js app in cPanel and filled in
 # deploy/deploy.config (see deploy/README.md).
+#
+# Second independent site from this same codebase: pass a target name (e.g.
+# `bash deploy/setup-remote.sh logicielbi`), matching deploy.sh's own target
+# argument — reads deploy/deploy.logicielbi.config instead of the default.
 set -euo pipefail
 
+TARGET="${1:-}"
+CONFIG_NAME="deploy.config"
+if [ -n "$TARGET" ]; then
+  CONFIG_NAME="deploy.$TARGET.config"
+fi
+
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_FILE="$DIR/deploy.config"
+CONFIG_FILE="$DIR/$CONFIG_NAME"
 
 if [ ! -f "$CONFIG_FILE" ]; then
-  echo "Missing $CONFIG_FILE — copy deploy.config.example to deploy.config and fill it in first." >&2
+  echo "Missing $CONFIG_FILE — copy deploy.config.example to $CONFIG_NAME and fill it in first." >&2
   exit 1
 fi
 # shellcheck disable=SC1090
 source "$CONFIG_FILE"
 
-: "${SSH_HOST:?deploy.config: SSH_HOST is required}"
-: "${SSH_USER:?deploy.config: SSH_USER is required}"
-: "${REMOTE_APP_PATH:?deploy.config: REMOTE_APP_PATH is required}"
-: "${REMOTE_NODE_ENV_ACTIVATE:?deploy.config: REMOTE_NODE_ENV_ACTIVATE is required}"
+: "${SSH_HOST:?$CONFIG_NAME: SSH_HOST is required}"
+: "${SSH_USER:?$CONFIG_NAME: SSH_USER is required}"
+: "${REMOTE_APP_PATH:?$CONFIG_NAME: REMOTE_APP_PATH is required}"
+: "${REMOTE_NODE_ENV_ACTIVATE:?$CONFIG_NAME: REMOTE_NODE_ENV_ACTIVATE is required}"
 SSH_PORT="${SSH_PORT:-22}"
 REMOTE_GIT_DIR="${REMOTE_GIT_DIR:-git/caissebi.git}"
 
@@ -67,4 +77,8 @@ $SSH "chmod +x \$HOME/$REMOTE_GIT_DIR/hooks/post-receive"
 echo "==> Done."
 echo ""
 echo "Next: from the project root, run:"
-echo "  bash deploy/deploy.sh"
+if [ -n "$TARGET" ]; then
+  echo "  bash deploy/deploy.sh $TARGET"
+else
+  echo "  bash deploy/deploy.sh"
+fi

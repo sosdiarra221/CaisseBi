@@ -30,5 +30,8 @@ logs
 # rebuilds — see server/routes/uploads/products/[filename].get.ts)
 storage/uploads/
 
-# Real o2switch connection details (copy deploy.config.example)
+# Real o2switch connection details (copy deploy.config.example). The
+# *.config wildcard also covers named per-target files like
+# deploy.logicielbi.config — see deploy/deploy.sh's target-name argument.
 deploy/deploy.config
+deploy/deploy.*.config
