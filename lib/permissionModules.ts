@@ -16,7 +16,7 @@ export type GateableModule = (typeof GATEABLE_MODULES)[number];
 // the API while the page itself stays unreachable.
 export const MODULE_ROUTE_PREFIXES: Record<GateableModule, string[]> = {
   produits: ["/produits", "/categories"],
-  stock: ["/stock"],
+  stock: ["/stock", "/articles"],
   ventes: ["/ventes"],
   rapports: ["/rapports", "/comptabilite"],
   depenses: ["/depenses"],

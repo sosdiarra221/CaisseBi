@@ -37,6 +37,7 @@ model Company {
   stores            Store[]
   categories        Category[]
   products           Product[]
+  articles           Article[]
   cashRegisters      CashRegister[]
   sales              Sale[]
   auditLogs          AuditLog[]
@@ -65,6 +66,7 @@ model Store {
   users             User[]
   categories        Category[]
   products          Product[]
+  articles          Article[]
   cashRegisters     CashRegister[]
   sales             Sale[]
   expenses          Expense[]
@@ -93,6 +95,7 @@ model User {
   cashSessions       CashSession[]
   sales              Sale[]
   stockMovements     StockMovement[]
+  articleMovements   ArticleMovement[]
   inventorySessions  InventorySession[]
   auditLogs          AuditLog[]
   passwordResetTokens PasswordResetToken[]
@@ -193,6 +196,48 @@ model StockMovement {
   createdAt   DateTime          @default(now())
 
   @@index([productId])
+}
+
+// Raw ingredients/supplies (flour, milk, packaging...) consumed to make the
+// Products that actually get sold — a separate inventory from Product's,
+// since a bakery/restaurant's ingredient stock and its sellable menu are
+// two different lists with different units (kg/L/pièce, not "units sold").
+model Article {
+  id          Int      @id @default(autoincrement())
+  companyId   Int
+  company     Company  @relation(fields: [companyId], references: [id])
+  storeId     Int
+  store       Store    @relation(fields: [storeId], references: [id])
+  designation String
+  // Decimal, not Int, because ingredient quantities are routinely
+  // fractional (1.5 kg, 0.25 L) unlike Product.quantity's whole units sold.
+  quantity    Decimal  @default(0) @db.Decimal(12, 3)
+  // Free text, not an enum: the UI offers a preset list of common
+  // restaurant units (kg, L, pièce...) but must also accept a custom one
+  // the user types in — an enum can't do that without a migration per unit.
+  unit        String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  movements ArticleMovement[]
+
+  @@index([companyId])
+  @@index([storeId])
+}
+
+model ArticleMovement {
+  id          Int               @id @default(autoincrement())
+  articleId   Int
+  article     Article           @relation(fields: [articleId], references: [id])
+  userId      Int
+  user        User              @relation(fields: [userId], references: [id])
+  type        StockMovementType
+  quantity    Decimal           @db.Decimal(12, 3)
+  observation String?
+  createdAt   DateTime          @default(now())
+
+  @@index([articleId])
 }
 
 enum InventoryStatus {

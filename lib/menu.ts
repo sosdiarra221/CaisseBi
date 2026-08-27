@@ -65,6 +65,13 @@ export const menuItems: MenuItem[] = [
           { lable: "Inventaire", link: "/stock/inventaire" },
         ],
       },
+      {
+        lable: "Articles",
+        childer: [
+          { lable: "Liste des articles", link: "/articles" },
+          { lable: "Mouvement d'articles", link: "/articles/mouvement" },
+        ],
+      },
       { lable: "Magasins", link: "/magasins", roles: ["OWNER"] },
       { lable: "Caisse", link: "/caisse" },
       { lable: "Ventes", link: "/ventes" },
