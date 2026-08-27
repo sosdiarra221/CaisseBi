@@ -273,6 +273,24 @@ const showLicenseModal = ref(false);
         </div>
       </div>
 
+      <!-- Par magasin (Direction, vue "Tous les magasins" uniquement) -->
+      <div v-if="(summary?.storeBreakdown?.length ?? 0) > 1" class="mb-6 overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div class="flex items-center gap-2 px-5 py-3.5 font-semibold text-white" :style="{ background: NAVY }">
+          <i class="fa fa-store"></i>Chiffre d'affaires par magasin — aujourd'hui
+        </div>
+        <div class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div
+            v-for="s in summary?.storeBreakdown ?? []"
+            :key="s.storeId"
+            class="rounded-xl border border-border p-4"
+          >
+            <p class="mb-1 truncate font-semibold" :style="{ color: NAVY }">{{ s.storeName }}</p>
+            <p class="mb-0.5 text-xl font-bold" :style="{ color: NAVY }">{{ formatAmount(s.revenueToday) }} {{ currency }}</p>
+            <p class="text-2xs text-body">{{ s.salesCountToday }} vente{{ s.salesCountToday === 1 ? "" : "s" }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Évolution / Répartition -->
       <div class="mb-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div class="overflow-hidden rounded-2xl bg-white shadow-sm xl:col-span-2">

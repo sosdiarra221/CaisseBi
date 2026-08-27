@@ -29,6 +29,7 @@ export default defineEventHandler(async (event) => {
       where: { companyId: user.companyId, ...storeScope, status: "COMPLETED", createdAt: { gte: startOfDay } },
       select: {
         id: true,
+        storeId: true,
         total: true,
         createdAt: true,
         payments: { select: { method: true, amount: true } },
@@ -108,6 +109,32 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Direction's aggregate view ("Tous les magasins"): break today's revenue
+  // down per store side-by-side, instead of just one blended total that
+  // hides which store is actually driving the numbers.
+  let storeBreakdown: { storeId: number; storeName: string; revenueToday: number; salesCountToday: number }[] | undefined;
+  if (user.role === "OWNER" && !user.activeStoreId) {
+    const stores = await prisma.store.findMany({
+      where: { companyId: user.companyId, active: true },
+      select: { id: true, name: true },
+    });
+    const byStore = new Map<number, { revenueToday: number; salesCountToday: number }>();
+    for (const s of todaySales) {
+      const entry = byStore.get(s.storeId) ?? { revenueToday: 0, salesCountToday: 0 };
+      entry.revenueToday += Number(s.total);
+      entry.salesCountToday += 1;
+      byStore.set(s.storeId, entry);
+    }
+    storeBreakdown = stores
+      .map((s) => ({
+        storeId: s.id,
+        storeName: s.name,
+        revenueToday: byStore.get(s.id)?.revenueToday ?? 0,
+        salesCountToday: byStore.get(s.id)?.salesCountToday ?? 0,
+      }))
+      .sort((a, b) => b.revenueToday - a.revenueToday);
+  }
+
   // Flatten the most recent sales into line-item rows for "Dernières ventes".
   const recentSaleLines = recentSales
     .flatMap((s) =>
@@ -137,5 +164,6 @@ export default defineEventHandler(async (event) => {
     paymentBreakdown,
     recentSaleLines,
     latestSaleId: recentSales[0]?.id ?? null,
+    storeBreakdown,
   };
 });
