@@ -183,8 +183,8 @@ const tableOptions = {
       </div>
     </div>
 
-    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div class="w-full max-w-md rounded-xl bg-card p-6">
+    <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+      <div class="w-full max-w-2xl rounded-xl bg-card p-6 my-8">
         <h4 class="mb-4 text-base">{{ editing ? "Modifier" : "Nouvel" }} article</h4>
         <p v-if="errorMessage" class="mb-3 rounded-lg bg-dangerlight px-3 py-2 text-danger text-sm">
           {{ errorMessage }}

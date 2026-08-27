@@ -5,16 +5,18 @@ import { resolveStoreScope } from "~/server/utils/storeScope";
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event);
   const query = getQuery(event);
-  const articleId = query.articleId ? Number(query.articleId) : undefined;
   const type = typeof query.type === "string" && query.type ? (query.type as "IN" | "OUT") : undefined;
 
   return prisma.articleMovement.findMany({
     where: {
-      articleId,
+      companyId: user.companyId,
+      ...resolveStoreScope(user),
       type,
-      article: { companyId: user.companyId, ...resolveStoreScope(user) },
     },
-    include: { article: true, user: { select: { id: true, name: true } } },
+    include: {
+      user: { select: { id: true, name: true } },
+      lines: { include: { article: true } },
+    },
     orderBy: { createdAt: "desc" },
     take: 200,
   });

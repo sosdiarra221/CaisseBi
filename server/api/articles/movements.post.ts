@@ -3,17 +3,18 @@ import { prisma } from "~/server/utils/prisma";
 import { requireModuleAccess } from "~/server/utils/permissions";
 import { resolveStoreScope } from "~/server/utils/storeScope";
 
-// One submission can move several articles at once (a delivery bringing in
-// multiple ingredients, a prep session consuming several) — all sharing the
-// same direction (type), each with its own quantity/observation.
+// One document per submission (like a Sale) — a delivery bringing in
+// several ingredients, or a prep session consuming several, entered
+// together under one Entrée/Sortie. See ArticleMovement/ArticleMovementLine
+// in prisma/schema.prisma.
 const bodySchema = z.object({
   type: z.enum(["IN", "OUT"]),
+  observation: z.string().optional().nullable(),
   lines: z
     .array(
       z.object({
         articleId: z.number().int().positive(),
         quantity: z.number().positive(),
-        observation: z.string().optional().nullable(),
       })
     )
     .min(1),
@@ -21,7 +22,7 @@ const bodySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const user = await requireModuleAccess(event, "stock");
-  const { type, lines } = await readValidatedBody(event, bodySchema.parse);
+  const { type, observation, lines } = await readValidatedBody(event, bodySchema.parse);
 
   const articleIds = lines.map((l) => l.articleId);
   const articles = await prisma.article.findMany({
@@ -37,27 +38,31 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const movements = await prisma.$transaction(
-    lines.flatMap((line) => {
-      const delta = type === "IN" ? line.quantity : -line.quantity;
-      return [
-        prisma.articleMovement.create({
-          data: {
-            articleId: line.articleId,
-            userId: user.id,
-            type,
-            quantity: line.quantity,
-            observation: line.observation,
-          },
-        }),
-        prisma.article.update({
-          where: { id: line.articleId },
-          data: { quantity: { increment: delta } },
-        }),
-      ];
-    })
-  );
+  const movement = await prisma.$transaction(async (tx) => {
+    const number = (await tx.articleMovement.count({ where: { companyId: user.companyId } })) + 1;
 
-  // Every other create in the interleaved array is the movement row itself.
-  return movements.filter((_, i) => i % 2 === 0);
+    const created = await tx.articleMovement.create({
+      data: {
+        companyId: user.companyId,
+        storeId: articles[0].storeId,
+        number,
+        type,
+        userId: user.id,
+        observation,
+        lines: {
+          create: lines.map((l) => ({ articleId: l.articleId, quantity: l.quantity })),
+        },
+      },
+      include: { lines: { include: { article: true } }, user: { select: { id: true, name: true } } },
+    });
+
+    for (const line of lines) {
+      const delta = type === "IN" ? line.quantity : -line.quantity;
+      await tx.article.update({ where: { id: line.articleId }, data: { quantity: { increment: delta } } });
+    }
+
+    return created;
+  });
+
+  return movement;
 });
